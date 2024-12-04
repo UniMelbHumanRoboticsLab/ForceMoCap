@@ -19,3 +19,8 @@
 *.xlsx
 *.drawios
 *.zip
+*.mvnx
+*.mvn
+*.mvno
+*.mvns
+*.mvna
