@@ -1,8 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
 from spatialmath import SE3,SO3,Plane3
 from scipy.spatial.transform import Rotation as R
 import numpy as np
@@ -12,6 +7,10 @@ import matplotlib.colors as mcolors
 from itertools import product
 from tqdm import tqdm
 np.set_printoptions(suppress=True,precision=4) # suppress scientific notation
+
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
 
 def plotJointFrames_EE(robot_joints,robot_ee):
 

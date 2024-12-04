@@ -8,12 +8,12 @@ file.
 
 @author: vcrocher
 """
-import sys, os
 import numpy as np
+
+import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
-sys.path.append(os.path.join(os.path.dirname(__file__), '..','mo_cap/xsens'))
-from mvnx_util import convert_mvn_to_isb_angles
+from mo_cap.xsens.mvnx_util import convert_mvn_to_isb_angles
 
 def adl_ul_convert(base_dir, output_dir, to_load, plot=False):
     #Build relative filename to load

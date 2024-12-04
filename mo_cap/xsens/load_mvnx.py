@@ -2,10 +2,12 @@
 Script to load an mvnx
 
 """
-
 import xml.etree.ElementTree as ET
 import collections
 import numpy as np
+
+import os,sys
+sys.path.append(os.path.join(os.path.dirname(__file__)))
 from mvnx_file_accessor import MvnxFileAccessor
 import mvn
 

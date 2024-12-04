@@ -1,5 +1,8 @@
-from load_mvnx import load_mvnx
 import numpy as np
+
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+from load_mvnx import load_mvnx
 
 def convert_mvn_to_isb_angles(file_name,side):
     # Load data

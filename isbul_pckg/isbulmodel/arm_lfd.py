@@ -11,8 +11,11 @@ only applied at the wrist/hand) and an ISB 7 DoF arm model define with the
 
 import numpy as np
 import matplotlib.pyplot as plt
-from .ISBUL import *
 from scipy.spatial.transform import Rotation as R
+
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+from ISBUL import *
 
 class arm_lfd():
     def __init__(self, arm_model_params_d={'torso':0.5,'clav':0.2,'ua_l': 0.3, 'fa_l': 0.25, 'ha_l': 0.1, 'm_ua': 2.0, 'm_fa':1.1+0.23+0.6},model='xsens',arm_side=True):

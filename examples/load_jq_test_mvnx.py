@@ -14,9 +14,9 @@ import numpy as np
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','mo_cap/xsens'))
-from mvnx_util import convert_mvn_to_isb_angles
+from mo_cap.xsens.mvnx_util import convert_mvn_to_isb_angles
 
-#%% Load and convert a selected file
+# Load and convert a selected file
 files_dir = './ULF_in_ADL/'
 output_dir= './export/'
 side = "right"

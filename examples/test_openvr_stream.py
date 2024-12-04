@@ -1,8 +1,8 @@
-import sys
-import time
-import os
 from blessed import Terminal
 import numpy as np
+
+import sys,os
+import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import mo_cap.vr.openvr_util as openvr_util
 

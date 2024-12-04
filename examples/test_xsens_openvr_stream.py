@@ -3,6 +3,7 @@ import time
 import os
 import socket
 from blessed import Terminal
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import mo_cap.vr.openvr_util as openvr_util
 from mo_cap.xsens.xsens_udp_util import parse_header,parse_UL_joint_angle,parse_time
