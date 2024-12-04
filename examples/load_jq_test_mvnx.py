@@ -8,9 +8,9 @@ file.
 
 @author: vcrocher
 """
+import numpy as np
 
 import sys, os
-import numpy as np
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','mo_cap/xsens'))
