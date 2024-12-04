@@ -21,14 +21,16 @@ sock.bind((UDP_IP, UDP_PORT))
 
 "start the VR platform"
 v = openvr_util.triad_openvr()
-tracker_details = ["=========VIVE Details=========="] + v.get_discovered_objects() +["=================="]
+tracker_details = ["=========VIVE Details=========="] + v.get_discovered_objects() +["=================="] 
 
 "set sampling time"
 if len(sys.argv) >= 2:
     interval = 1/70
     num_tracker = int(sys.argv[1])
+    info_num = int(sys.argv[2])
 else:
-    interval = 1/70
+    interval = 1/60
+    info_num = 2
     num_tracker = 2
 
 "start the logging"
@@ -43,7 +45,7 @@ with term.fullscreen():
 
     while(True):
         start = time.time()
-        txt = "=========VIVE==========\n"
+        console_log = "========VIVE==========\n"
         
         """
         Vive Acquisition
@@ -51,37 +53,37 @@ with term.fullscreen():
         # notify if a tracker is lost, if not, print euler detail in every tracker
         lost = False
         for i in range(num_tracker):
-            txt += f"Tracker {i+1}:"
+            console_log += f"Tracker {i+1}:"
             pose_euler,t_mat,valid =  v.devices[f"tracker_{i+1}"].get_pose_euler() # return the pose in euler (ZYX) and transformation matrix
             if valid:
                 for each in pose_euler:
-                    txt += "%8.4f" % each
-                    txt += " "
-                txt += "\n"
+                    console_log += "%8.4f" % each
+                    console_log += " "
+                console_log += "\n"
             else:
-                txt += " Lost"
-                txt += "\n"
+                console_log += " Lost"
+                console_log += "\n"
                 lost = True
 
         """
         XSENS Acquisition
         """
-        txt += "=========XSENS==========\n"
+        
         # loop n times if we are expecting n different UDP packets
-        info_num = 2
         for i in range(info_num):
             message, addr = sock.recvfrom(4096)
             header = parse_header(message[0:24]) # parse key info into header first
             if header['message_id'] == 'MXTP20':
+                console_log += "=========XSENS Joints==========\n"
                 right,left = parse_UL_joint_angle(message=message[24:])
                 for key in right.keys():
-                    txt += f"{key:15}: {left[key]:8.4f} {right[key]:8.4f}\n"
-                # print("RIGHT:",right)
-                # print("LEFT:",left)
+                    console_log += f"{key:15}: {left[key]:8.4f} {right[key]:8.4f}\n"
+
             elif header['message_id'] == 'MXTP25' and header['character_id'] == 0:
                 sampled_time = parse_time(message[-12:])
-                # print("\rSampled_time:",sampled_time)
-                txt += f"TIME: {sampled_time}\n"
+                console_log += "=========Time==========\n"
+                string = "TIME"
+                console_log += f"{string:15}: {sampled_time}\n"
             else:
                 continue
 
@@ -97,5 +99,5 @@ with term.fullscreen():
         """
         sampling_freq = 1/(time.time()-start)
         string = "sampling freq"
-        txt += f"{string:15}: {sampling_freq:.4f} Hz"
-        print(term.move(start_row, 0) + term.clear_eol() + txt)
+        console_log += f"{string:15}: {sampling_freq:.4f} Hz"
+        print(term.move(start_row, 0) + term.clear_eos() + console_log)

@@ -22,7 +22,7 @@ with term.fullscreen():
         print(term.move(i, 0) + term.bold(message))
 
         # Calculate the starting row for streaming data
-        start_row = len(tracker_details)
+    start_row = len(tracker_details)
         
     while(True):
         start = time.time()

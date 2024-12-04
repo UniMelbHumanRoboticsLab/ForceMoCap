@@ -28,7 +28,12 @@ def convert_to_euler(pose_mat):
     rotation = pose_mat_np[:3,:3]
     U, _, Vt = np.linalg.svd(rotation)
     R_orthogonalized = np.dot(U, Vt)  
-    A = SO3(R_orthogonalized)  
+    try:
+        A = SO3(R_orthogonalized) 
+    except:
+        A = SO3()
+        assert 0
+
     t = pose_mat_np[:,3]
 
     # Create the SE(3) object
