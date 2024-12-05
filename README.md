@@ -6,6 +6,6 @@ System Development for measuring subject joint angle, task position tracking and
 
 ## Motion Capture System - `mo_cap`
 
-[Motion Capture Python SDK Documentation](https://github.com/UniMelbHumanRoboticsLab/ForceMoCap/tree/main/mo_cap) for collecting subject joint angles (XSENS) and position tracking (VIVE)
+[Motion Capture SDK](https://github.com/UniMelbHumanRoboticsLab/ForceMoCap/tree/main/mo_cap) for collecting subject joint angles (XSENS) and position tracking (VIVE)
 
 
