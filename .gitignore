@@ -11,7 +11,6 @@
 *.in
 *.pyd
 *.json
-*.png
 *.docx
 *.pdf
 *.pptx
