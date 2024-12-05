@@ -4,7 +4,7 @@ System Development for measuring subject joint angle, task position tracking and
 ## Force Tracking System - force_tracking
 Force Tracking Glove Hardware Design and SDK Documentation for collecting interaction force between human and environment.
 
-## Motion Capture System = mo_cap
+## Motion Capture System - mo_cap
 Motion Capture Python SDKs for collecting subject joint angles (XSENS) and position tracking (VIVE)
 
 
