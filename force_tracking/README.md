@@ -6,7 +6,7 @@ Force/Position Tracking Gloves Hardware Design and Firmware Packages for collect
 ### 1. Force Sensor Distribution
 - A: Total of 8 Force Sensors on each hand. Sensor distribution as detailed below:
     - 2 x Palm Abductor sensor
-    - 3 x Metacarpal base sensor (index, middleg)
+    - 2 x Metacarpal base sensor (index, middle)
     - 4 x Finger sensors (thumb, index, middle, ring and little)
     - ![sensor_dist_8](./diagram/sensor_dist_8.png)
 - B: Simplified 6 Force Sensors on each hand. Sensor distribution as detailed below:
