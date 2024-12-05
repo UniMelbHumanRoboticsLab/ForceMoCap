@@ -4,28 +4,35 @@ Force/Position Tracking Gloves Hardware Design and Firmware Packages for collect
 ## Force Tracking Glove Hardware Specifications
 
 ### 1. Force Sensor Distribution
-- Total of 8 Force Sensors on each hand. Sensor distribution as detailed below:
-    - 1 x Palmar sensor
-    - 3 x Metacarpal base sensor (index, middle and ring)
-    - 4 x Finger sensors (index, middle, ring and little)
-    - ![sensor_dist](./diagram/sensor_dist.png)
-        -  [[1]](https://doi.org/10.1080/09638280410001704278) `A comparison of the grip force distribution in natural hands and in prosthetic hands, 2004`
+- A: Total of 8 Force Sensors on each hand. Sensor distribution as detailed below:
+    - 2 x Palm Abductor sensor
+    - 3 x Metacarpal base sensor (index, middleg)
+    - 4 x Finger sensors (thumb, index, middle, ring and little)
+    - ![sensor_dist_8](./diagram/sensor_dist_8.png)
+- B: Simplified 6 Force Sensors on each hand. Sensor distribution as detailed below:
+    - 2 x Palm Abductor sensor
+    - 4 x Finger sensors (thumb, index, middle, ring and little)
+    - ![sensor_dist_6](./diagram/sensor_dist_6.png)
+- Reference:
+    - [[1]](https://doi.org/10.1080/09638280410001704278) `A comparison of the grip force distribution in natural hands and in prosthetic hands, 2004`
+    - [[2]](https://doi.org/10.1016/j.jht.2016.10.009) `Load distribution of the hand during cylinder grip analyzed by Manugraphy, 2017`
+    - [[3]](https://doi.org/10.1080/00140139508925140) `Grip Pressure Distribution Under Static and Dynamic Loading, 1993`
 
 ### 2. Force Sensor Specifications
 - Force Range:
     - Recommendation - 0.1 to 80N in normal direction for entire hand function evaluation
-        - [[2]](https://doi.org/10.1109/TBME.1986.325808) `Sensors for Use with Functional Neuromuscular Stimulation, 1986`
+        - [[4]](https://doi.org/10.1109/TBME.1986.325808) `Sensors for Use with Functional Neuromuscular Stimulation, 1986`
     - Common - 0.1 - 30N for each contact
-        -  [[1]](https://doi.org/10.1080/09638280410001704278) `A comparison of the grip force distribution in natural hands and in prosthetic hands, 2004 - Conductive Polymer Sensor`
-        - [[3]](https://doi.org/10.1016/0021-9290(91)90310-J) `A conductive polymer sensor for measuring external finger forces, 1991 -  Conductive Polymer Sensor`
+        - [[1]](https://doi.org/10.1080/09638280410001704278) `A comparison of the grip force distribution in natural hands and in prosthetic hands, 2004 - Conductive Polymer Sensor`
+        - [[5]](https://doi.org/10.1016/0021-9290(91)90310-J) `A conductive polymer sensor for measuring external finger forces, 1991 -  Conductive Polymer Sensor`
     - Acceptable: 0 - 50N for each contact
 - Force Resolution: 
     - Recommendation - 0.1N (low force) - 1N (high force) for hand function evaluation
-        - [[2]](https://doi.org/10.1109/TBME.1986.325808) `Sensors for Use with Functional Neuromuscular Stimulation, 1986`
+        - [[4]](https://doi.org/10.1109/TBME.1986.325808) `Sensors for Use with Functional Neuromuscular Stimulation, 1986`
     - Common - 0.3N - 0.33N  
-        - [[3]](https://doi.org/10.1016/0021-9290(91)90310-J) `A conductive polymer sensor for measuring external finger forces, 1991 -  Conductive polymer sensor`
-        - [[4]](https://doi.org/10.1109/Transducers50396.2021.9495692) `A Glove-Based Human-Machine Interface Assisted by Ultra-Stretchable Strain Sensors and Three-Axis Force Sensors, 2021 - PDMS/MWCNT Peizoresistive sensor`
-        - [[5]](https://doi.org/10.1109/IMTC.2000.848849) `A Strain Gauge Tactile Sensor for Finger-Mounted Applications, 2000 - Strain Gauge sensor`
+        - [[5]](https://doi.org/10.1016/0021-9290(91)90310-J) `A conductive polymer sensor for measuring external finger forces, 1991 -  Conductive polymer sensor`
+        - [[6]](https://doi.org/10.1109/Transducers50396.2021.9495692) `A Glove-Based Human-Machine Interface Assisted by Ultra-Stretchable Strain Sensors and Three-Axis Force Sensors, 2021 - PDMS/MWCNT Peizoresistive sensor`
+        - [[7]](https://doi.org/10.1109/IMTC.2000.848849) `A Strain Gauge Tactile Sensor for Finger-Mounted Applications, 2000 - Strain Gauge sensor`
     - Acceptable: < 0.5N
 - Desirable to measure shear forces
 
