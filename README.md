@@ -10,4 +10,4 @@ System Development for measuring subject joint angle, task position tracking and
     - OpenVR and OpenSDK - position tracking / hand kinematic tracking and communication codes
 
 ## [Upper Limb DH Model](https://github.com/UniMelbHumanRoboticsLab/ForceMoCap/tree/main/isbul_pckg)  - `isbul_pckg`
-- DH Model compatible with [XSENS Biomechanical Model](https://base.movella.com/s/article/MVN-Biomechanical-Model?language=en_US) and [ISB Biomechanical Model](https://www.sciencedirect.com/science/article/pii/S002192900400301X?via%3Dihub)
+- DH Model compatible with [XSENS Biomechanical Model](https://base.movella.com/s/article/MVN-Biomechanical-Model?language=en_US) and [ISB Biomechanical Model](https://www.sciencedirect.com/science/article/pii/S002192900400301X?via%3Dihub) up to 12 DOFs.
