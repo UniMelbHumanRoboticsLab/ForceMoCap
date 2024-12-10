@@ -5,18 +5,14 @@ import socket
 from blessed import Terminal
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from ForceMoCap.mo_cap.xsens.xsens_util import parse_header,parse_UL_joint_angle,parse_time
+from ForceMoCap.mo_cap.xsens.xsens_util import parse_header,parse_UL_joint_angle,parse_time,start_xsens_UDP
 
 
 "start the console terminal for nice logging"
 term = Terminal()
 
 "Start UDP Port for XSENS"
-UDP_IP = "127.0.0.3"
-UDP_PORT = 9764
-sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
-sock.bind((UDP_IP, UDP_PORT))
+sock = start_xsens_UDP()
 
 "set sampling time"
 if len(sys.argv) >= 2:

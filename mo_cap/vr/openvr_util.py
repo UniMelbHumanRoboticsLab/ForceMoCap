@@ -40,6 +40,35 @@ def convert_to_euler(pose_mat):
     T = SE3.Rt(A, t)
     return [x,y,z,yaw,pitch,roll],T
 
+#Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Euler and quaternions
+def convert_all(pose_mat):
+    yaw = 180 / math.pi * math.atan2(pose_mat[1][0], pose_mat[0][0])
+    pitch = 180 / math.pi * math.asin(-pose_mat[2][0])
+    roll = 180 / math.pi * math.atan2(pose_mat[2][1], pose_mat[2][2])
+    x = pose_mat[0][3]
+    y = pose_mat[1][3]
+    z = pose_mat[2][3]
+
+    # change the data type and correct the rotation matrix with SVD
+    pose_mat_np = np.array(pose_mat.m).reshape(3, 4).astype(np.float64) # openvr gives it as <f4, need to change to np.float64
+    rotation = pose_mat_np[:3,:3]
+    U, _, Vt = np.linalg.svd(rotation)
+    R_orthogonalized = np.dot(U, Vt)  
+    try:
+        A = SO3(R_orthogonalized) 
+    except:
+        A = SO3()
+        assert 0
+
+    t = pose_mat_np[:,3]
+
+    # Create the SE(3) object
+    T = SE3.Rt(A, t)
+    quaternion = R.from_matrix(R_orthogonalized).as_quat().tolist()
+
+    # return position, yaw-pitch-roll (ZYX intrinsic), quaternion and rotation matric
+    return [x,y,z],[yaw,pitch,roll],quaternion,T
+
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Quaternion
 def convert_to_quaternion(pose_mat):
     # Per issue #2, adding a abs() so that sqrt only results in real numbers
@@ -98,6 +127,15 @@ class vr_tracked_device():
             return pose_euler,t_mat,pose[self.index].bPoseIsValid
         else:
             return [0,0,0,0,0,0],[0],pose[self.index].bPoseIsValid
+        
+    def get_all_pose(self, pose=None):
+        if pose == None:
+            pose = get_pose(self.vr)
+        if pose[self.index].bPoseIsValid:
+            position,euler,quat,t_mat = convert_all(pose[self.index].mDeviceToAbsoluteTracking)
+            return position,euler,quat,t_mat,pose[self.index].bPoseIsValid
+        else:
+            return [0,0,0],[0,0,0],[0,0,0,0],[0],pose[self.index].bPoseIsValid
 
     def get_pose_matrix(self, pose=None):
         if pose == None:
@@ -211,7 +249,6 @@ class triad_openvr():
             # Iterate through the pose list to find the active devices and determine their type
             for i in range(openvr.k_unMaxTrackedDeviceCount):
                 if poses[i].bDeviceIsConnected:
-                    print(i)
                     self.add_tracked_device(i)
 
     def __del__(self):

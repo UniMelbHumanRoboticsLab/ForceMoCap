@@ -4,7 +4,7 @@ import socket
 np.set_printoptions(suppress=True, precision=10)
 
 "Function to Start TCP Port for XSENS"
-def start_xsens_TCP(timeout):
+def start_xsens_TCP(timeout=0.01):
     TCP_IP = "127.0.0.3"
     TCP_PORT = 9764
     sock = socket.socket(socket.AF_INET, # Internet
@@ -15,6 +15,15 @@ def start_xsens_TCP(timeout):
     conn,addr = sock.accept()
     conn.settimeout(timeout)
     return sock,conn,addr
+
+"Function to Start UDP Port for XSENS"
+def start_xsens_UDP():
+    UDP_IP = "127.0.0.3"
+    UDP_PORT = 9763
+    sock = socket.socket(socket.AF_INET, # Internet
+                        socket.SOCK_DGRAM) # UDP
+    sock.bind((UDP_IP, UDP_PORT))
+    return sock
 
 """
 Base Parse Function
