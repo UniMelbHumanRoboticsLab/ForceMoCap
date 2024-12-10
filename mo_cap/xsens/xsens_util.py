@@ -1,6 +1,20 @@
 import numpy as np
 import struct
+import socket
 np.set_printoptions(suppress=True, precision=10)
+
+"Function to Start TCP Port for XSENS"
+def start_xsens_TCP(timeout):
+    TCP_IP = "127.0.0.3"
+    TCP_PORT = 9764
+    sock = socket.socket(socket.AF_INET, # Internet
+                        socket.SOCK_STREAM) # UDP
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow immediate reuse of the port
+    sock.bind((TCP_IP, TCP_PORT))
+    sock.listen(1)
+    conn,addr = sock.accept()
+    conn.settimeout(timeout)
+    return sock,conn,addr
 
 """
 Base Parse Function

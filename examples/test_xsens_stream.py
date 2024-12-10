@@ -5,7 +5,7 @@ import socket
 from blessed import Terminal
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from mo_cap.xsens.xsens_udp_util import parse_header,parse_UL_joint_angle,parse_time
+from ForceMoCap.mo_cap.xsens.xsens_util import parse_header,parse_UL_joint_angle,parse_time
 
 
 "start the console terminal for nice logging"
