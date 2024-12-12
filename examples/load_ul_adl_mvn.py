@@ -44,14 +44,14 @@ def adl_ul_convert(base_dir, output_dir, to_load, plot=False):
     
     q,dt,t = convert_mvn_to_isb_angles(file_name,side)
 
-    arm_model_params_d = {'torso':0.6,
+    body_params = {'torso':0.6,
             'clav': 0.2,
             'ua_l': 0.3,
             'fa_l': 0.25,
             'ha_l': 0.05,
             'm_ua': 2.0,
             'm_fa': 1.1+0.23+0.6}
-    ul_model = arm_lfd(arm_model_params_d,model="xsens",arm_side=side)
+    ul_model = arm_lfd(body_params,model="xsens",arm_side=side)
 
         # assert 0
     ul_model.UL.plot(np.deg2rad(q[0::5]),block=True,loop=False)

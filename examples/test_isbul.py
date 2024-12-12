@@ -38,15 +38,15 @@ def plotJointFrames_EE(robot_joints,robot_ee):
     
 
 #Define ISB rtb arm model
-arm_model_params_d = {'torso':0.6,
+body_params = {'torso':0.6,
                       'clav': 0.4,
                       'ua_l': 0.3,
                       'fa_l': 0.25,
                       'ha_l': 0.05,
                       'm_ua': 2.0,
                       'm_fa': 1.1+0.23+0.6}
-ul_model = arm_lfd(arm_model_params_d,model="xsens",arm_side="right")
-ul_model_left = arm_lfd(arm_model_params_d,model="xsens",arm_side="left")
+ul_model = arm_lfd(body_params,model="xsens",arm_side="right")
+ul_model_left = arm_lfd(body_params,model="xsens",arm_side="left")
 
 """
 Test FA and UA
