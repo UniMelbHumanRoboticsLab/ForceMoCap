@@ -10,7 +10,7 @@ np.set_printoptions(suppress=True,precision=4) # suppress scientific notation
 
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
+from isbul_pckg.isbulmodel.arm_xsens import arm_xsens
 
 def plotJointFrames_EE(robot_joints,robot_ee):
 
@@ -45,8 +45,8 @@ body_params = {'torso':0.6,
                       'ha_l': 0.05,
                       'm_ua': 2.0,
                       'm_fa': 1.1+0.23+0.6}
-ul_model = arm_lfd(body_params,model="xsens",arm_side="right")
-ul_model_left = arm_lfd(body_params,model="xsens",arm_side="left")
+ul_model = arm_xsens(body_params,model="xsens",arm_side="right")
+ul_model_left = arm_xsens(body_params,model="xsens",arm_side="left")
 
 """
 Test FA and UA

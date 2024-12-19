@@ -17,7 +17,7 @@ import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 from ISBUL import *
 
-class arm_lfd():
+class arm_xsens():
     def __init__(self, body_params={'torso':0.5,'clav':0.2,'ua_l': 0.3, 'fa_l': 0.25, 'ha_l': 0.1, 'm_ua': 2.0, 'm_fa':1.1+0.23+0.6},model='xsens',arm_side=True):
 
         self.model = model
@@ -115,7 +115,6 @@ class arm_lfd():
             offset.plot(frame=f"{i}", length=0.05, ax=ax,color=colors[i],flo=(0.005,0.005,0.005))
         robot_ee.plot(frame=f"hand", length=0.05, ax=ax,color='k',flo=(0.01,0.01,0.01))
         
-
     def ArmMassFromBodyMass(self, body_mass: float):
         '''Calculate arm mass from overall body mass based on anthropomorphic rules
         from Drillis et al., Body Segment Parameters, 1964. Table 7'''

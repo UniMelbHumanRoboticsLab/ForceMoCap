@@ -367,10 +367,10 @@ class DeweightThread(QThread):
         subject_files = list_files_in_folder(self.traj_path)
         print("Subject files in folder:", subject_files)
         if not subject_files:
-            self.cur_subject_number = 0
+            self.cur_sbjject_number = 0
         else:
-            self.cur_subject_number = find_latest_subject_num(subject_files)+1
-        self.file_name = f"s{self.cur_subject_number}_{armSide}.csv"
+            self.cur_sbjject_number = find_latest_subject_num(subject_files)+1
+        self.file_name = f"s{self.cur_sbjject_number}_{armSide}.csv"
         self.subject_data = []
 
         """
@@ -652,7 +652,7 @@ class DeweightThread(QThread):
                     calibrated = False  
                     startCalibrate = False
                     self.subject_data = []
-                    self.file_name = f"s{self.cur_subject_number}_{armSide}.csv"
+                    self.file_name = f"s{self.cur_sbjject_number}_{armSide}.csv"
                     startTime = 0  
                     print("Tracking LEFT arm")
 
@@ -669,7 +669,7 @@ class DeweightThread(QThread):
                     calibrated = False
                     startCalibrate = False
                     self.subject_data = []
-                    self.file_name = f"s{self.cur_subject_number}_{armSide}.csv"
+                    self.file_name = f"s{self.cur_sbjject_number}_{armSide}.csv"
                     startTime = 0  
                     print("Tracking RIGHT arm")
 

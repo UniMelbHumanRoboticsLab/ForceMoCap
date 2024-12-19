@@ -12,7 +12,7 @@ import numpy as np
 
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from isbul_pckg.isbulmodel.arm_lfd import arm_lfd
+from isbul_pckg.isbulmodel.arm_xsens import arm_xsens
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','mo_cap/xsens'))
 from mo_cap.xsens.mvnx_util import convert_mvn_to_isb_angles
 
@@ -38,7 +38,7 @@ body_params = {'torso':0.6,
         'ha_l': 0.05,
         'm_ua': 2.0,
         'm_fa': 1.1+0.23+0.6}
-ul_model = arm_lfd(body_params,model="xsens",arm_side=side)
+ul_model = arm_xsens(body_params,model="xsens",arm_side=side)
 
     # assert 0
 ul_model.UL.plot(np.deg2rad(q[0::5]),block=True,loop=True)
