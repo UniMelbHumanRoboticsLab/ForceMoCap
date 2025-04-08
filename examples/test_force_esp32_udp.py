@@ -5,14 +5,14 @@ import socket
 from blessed import Terminal
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from mo_cap.xsens.xsens_util import parse_header,parse_UL_joint_angle,parse_time,start_xsens_UDP
+from mo_cap.force_esp32.force_esp32_util import start_force_esp32_UDP
 
 
 "start the console terminal for nice logging"
 term = Terminal()
 
 "Start UDP Port for XSENS"
-sock = start_xsens_UDP()
+sock = start_force_esp32_UDP()
 
 "set sampling time"
 if len(sys.argv) >= 2:
@@ -27,7 +27,7 @@ with term.fullscreen():
 
     # log vr details
     start_row = 0
-    tracker_details = ["=========XSENS=========="] + ["WELCOME"]+["=================="]
+    tracker_details = ["=========Force_ESP32=========="] + ["WELCOME"]+["=================="]
 
     for i, message in enumerate(tracker_details):
         print(term.move(i, 0) + term.bold(message))
@@ -38,26 +38,13 @@ with term.fullscreen():
         start = time.time()
 
         """
-        XSENS Acquisition
+        Force_ESP32 Acquisition
         """
-        txt = "=========XSENS==========\n"
+        txt = "=========Force_ESP32==========\n"
         # loop n times if we are expecting n different UDP packets
-        info_num = 2
-        for i in range(info_num):
-            message, addr = sock.recvfrom(4096)
-            header = parse_header(message[0:24]) # parse key info into header first
-            if header['message_id'] == 'MXTP20':
-                right,left = parse_UL_joint_angle(message=message[24:])
-                for key in right.keys():
-                    txt += f"{key:15}: {left[key]:8.4f} {right[key]:8.4f}\n"
-                # print("RIGHT:",right)
-                # print("LEFT:",left)
-            elif header['message_id'] == 'MXTP25' and header['character_id'] == 0:
-                sampled_time = parse_time(message[-12:])
-                # print("\rSampled_time:",sampled_time)
-                txt += f"TIME: {sampled_time}\n"
-            else:
-                continue
+        message, addr = sock.recvfrom(4096)
+        txt += f"Msg: {message}\n"
+
 
         """
         Control Sampling Frequency
