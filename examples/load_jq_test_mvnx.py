@@ -13,7 +13,6 @@ import numpy as np
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from isbul_pckg.isbulmodel.arm_xsens import arm_xsens
-sys.path.append(os.path.join(os.path.dirname(__file__), '..','mo_cap/xsens'))
 from mo_cap.xsens.mvnx_util import convert_mvn_to_isb_angles
 
 # Load and convert a selected file

@@ -36,7 +36,6 @@ def plotJointFrames_EE(robot_joints,robot_ee):
         offset.plot(frame=f"{i}", length=0.05, ax=ax,color=colors[i],flo=(0.005,0.005,0.005))
     robot_ee.plot(frame=f"hand", length=0.05, ax=ax,color='k',flo=(0.01,0.01,0.01))
     
-
 #Define ISB rtb arm model
 body_params = {'torso':0.6,
                       'clav': 0.4,
