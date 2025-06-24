@@ -12,8 +12,6 @@
 *.pyd
 *.json
 *.docx
-*.pdf
-*.pptx
 *.xlsx
 *.drawios
 *.zip
@@ -24,3 +22,4 @@
 *.mvna
 /force_tracking/electronics/com.github.pcbway.PCBWay-Plug-in-for-Kicad_v1.0.2
 /force_tracking/electronics/kicad_templates-master
+/force_tracking/electronics/forceCap_pcb/forceCap_pcb-backups
