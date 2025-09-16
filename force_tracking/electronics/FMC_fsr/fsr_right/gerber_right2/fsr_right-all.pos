@@ -1,0 +1,29 @@
+### Footprint positions - created on 2025-08-29T09:25:59+1000 ###
+### Printed by KiCad version 9.0.2
+## Unit = mm, Angle = deg.
+## Side : All
+# Ref     Val                     Package                                              PosX       PosY       Rot  Side
+JIn2      Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          148.7500   -73.1450    0.0000  bottom
+JMid2     Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          161.8500   -73.1450    0.0000  bottom
+JRin2     Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          175.0500   -73.1450    0.0000  bottom
+JTh2      Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          149.2900   -86.6000   90.0000  bottom
+C2        100nC                   C_Disc_D3.0mm_W2.0mm_P2.50mm                     176.8500  -102.0000  180.0000  top
+JIn1      Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          144.6500   -73.1450  180.0000  top
+JMid1     Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          157.8500   -73.1450  180.0000  top
+JPin1     Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          184.0500   -73.1450  180.0000  top
+JRin1     Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          170.9500   -73.1450  180.0000  top
+JTh1      Conn_01x02_Pin          JST_XH_S2B-XH-A_1x02_P2.50mm_Horizontal          149.3450   -95.0500  -90.0000  top
+RIn1      100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   142.2950   -77.6000    0.0000  top
+RIn2      100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   151.2000   -77.6000  180.0000  top
+RMid1     100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   155.3950   -77.6000    0.0000  top
+RMid2     100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   164.2050   -77.6000  180.0000  top
+RPin1     100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   181.3950   -77.6000    0.0000  top
+RRin1     100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   168.4950   -77.6000    0.0000  top
+RRin2     100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   177.4050   -77.6000  180.0000  top
+RTh1      100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   149.2400   -90.7500    0.0000  top
+RTh2      100R                    R_Axial_DIN0204_L3.6mm_D1.6mm_P1.90mm_Vertical   140.6400   -90.7500    0.0000  top
+SW2       SW_DPST_x2              JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical            182.9000   -92.2000   90.0000  top
+U1        SEEEDUINO-XIAO-ESP32S3  MOUDLE14P-DIP-2.54-21X17.8MM                     167.9200   -90.6800  -90.0000  top
+bat2      ~                       JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical            181.6000   -98.5500    0.0000  top
+bat4      ~                       JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical            182.8500   -84.9000   90.0000  top
+## End

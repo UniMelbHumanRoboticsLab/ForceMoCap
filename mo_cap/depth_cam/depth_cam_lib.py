@@ -9,10 +9,10 @@ from collections import deque
 import matplotlib.pyplot as plt
 import keyboard
 
-from PyQt6 import QtWidgets
-from PyQt6.QtGui import QPixmap,QImage
-from PyQt6.QtWidgets import QWidget,QLabel
-from PyQt6.QtCore import QThread,pyqtSignal,Qt 
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QPixmap,QImage
+from PyQt5.QtWidgets import QWidget,QLabel
+from PyQt5.QtCore import QThread,pyqtSignal,Qt 
 import pyqtgraph as pg
 from pyqtgraph import mkPen
 from pglive.kwargs import Axis

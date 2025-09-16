@@ -13,7 +13,7 @@ import numpy as np
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from isbul_pckg.isbulmodel.arm_xsens import arm_xsens
-from mo_cap.xsens.mvnx_util import convert_mvn_to_isb_angles
+from mo_cap.xsens_post_process.mvnx_util import convert_mvn_to_isb_angles
 
 # Load and convert a selected file
 files_dir = './ULF_in_ADL/'
@@ -39,8 +39,8 @@ body_params = {'torso':0.6,
         'm_fa': 1.1+0.23+0.6}
 ul_model = arm_xsens(body_params,model="xsens",arm_side=side)
 
-    # assert 0
 ul_model.UL.plot(np.deg2rad(q[0::5]),block=True,loop=True)
+
 #Create a panda datframe of the movements with 7DoFs arm format
 #the df is intended to hold joint angle sequence and time of a single movement
 #and save in a separate into subject/task/repetition files

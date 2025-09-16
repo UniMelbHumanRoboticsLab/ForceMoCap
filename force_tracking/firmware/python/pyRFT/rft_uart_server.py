@@ -4,8 +4,14 @@ import threading
 import numpy as np
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__)))
-from RFT_UART_command import *
-from RFT_UART_response import *
+from rft_helper.RFT_UART_command import *
+from rft_helper.RFT_UART_response import *
+
+np.set_printoptions(
+    precision=4,
+    linewidth=np.inf,   
+    formatter={'float_kind': lambda x: f"{x:.4f}"}
+)
 
 class RFTSeriesServer:
     __response = dict()
@@ -28,12 +34,20 @@ class RFTSeriesServer:
         self.on = False
     def restart(self):
         self.close()
-        self.ser = serial.Serial(self.port, self.baud)
+        self.reconnect()
         self.on = True
     def init_and_collect(self):
         print("\nInitialize RFT")
         self.init_rft()
         self.sendCommand(COMMAND_START_FT_DATA_OUTPUT)
+    def reconnect(self):
+        while True:
+            try:
+                self.ser = serial.Serial(self.port, self.baud)
+                break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
         
     ## Command Packet Structure
     # SOP : 0x55
@@ -81,7 +95,7 @@ class RFTSeriesServer:
         time.sleep(0.1)
         self.ser.flush()
 
-        self.sendCommand(COMMNAD_READ_MODEL_NAME)
+        self.sendCommand(COMMAND_READ_MODEL_NAME)
         time.sleep(0.1)
         self.sendCommand(COMMAND_READ_SERIAL_NUMBER)
         time.sleep(0.1)
@@ -95,7 +109,7 @@ class RFTSeriesServer:
         print(f"RFT Response:{responseSetBaudrate(self.getResponse(ID_SET_BAUDRATE))} \t\tCurrent Baud Rate:{responseReadBaudrate(self.getResponse(ID_READ_BAUDRATE))}")
 
         # set and read output rate
-        self.sendCommand(commandSetDataOutputRate(100))
+        self.sendCommand(commandSetDataOutputRate(200))
         time.sleep(1)
         self.sendCommand(COMMAND_READ_DATA_OUTPUT_RATE)
         time.sleep(0.1)
@@ -105,11 +119,15 @@ class RFTSeriesServer:
         self.sendCommand(COMMAND_START_FT_DATA_OUTPUT)
         time.sleep(0.1)
         print(f"RFT Start: {responseReadFTData(self.getResponse(ID_START_FT_DATA_OUTPUT))}")
-        self.sendCommand(commandSetFilter(1,10))
+        self.sendCommand(commandSetFilter(1,6))
         time.sleep(0.1)
         self.hardTare()
         time.sleep(0.1)
         self.softTare()
 
 if __name__ == "__main__":
-    p = RFTSeriesServer()
+    PORT_RFT = "COM5"
+    rft = RFTSeriesServer(port = PORT_RFT)
+    rft.init_and_collect()
+    while True: 
+        print(rft.getTareFT())
