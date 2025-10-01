@@ -18,8 +18,8 @@ print(use_app('pyside6'))
 import pyqtgraph as pg # use dev pyqtgraph
 pg.setConfigOptions(antialias=False)     # lines render faster
 pg.setConfigOptions(useOpenGL=True)
-pg.setConfigOptions(useCupy=True)
-pg.setConfigOptions(useNumba=True)
+pg.setConfigOptions(useCupy=False)
+pg.setConfigOptions(useNumba=False)
 pg.setConfigOptions(crashWarning=True)
 pg.systemInfo()
 
@@ -99,15 +99,23 @@ class FMCBase(QtWidgets.QMainWindow):
         col = ["r","g","b"]
         if dim == 1:
             name = ["norm"]
-        else:
+            col = ["r","g","b"]
+            width = 1
+        elif dim ==3:
             name = ["x", "y", "z"]
+            col = ["r","g","b"]
+            width = 1
+        elif dim == 2:
+            name = ["instructed","measured"]
+            col = ["#fff4e6","#00fd0d"]
+            width = 5
 
         data_buffer = np.zeros((N_buffer,dim), dtype=np.float32)
         lines = []
         for i in range(dim):
             lines.append(plt.plot(live_stream["time_buffer"], 
                                   data_buffer[:,i]+i+1, 
-                                  pen=pg.mkPen(col[i], width=1), 
+                                  pen=pg.mkPen(col[i], width=width), 
                                   name=name[i]))
             lines[i].setDownsampling(auto=True, method='subsample')
             lines[i].setClipToView(state=True)

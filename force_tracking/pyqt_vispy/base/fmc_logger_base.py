@@ -14,11 +14,11 @@ class FMCLoggerBase(QObject):
     time_ready = Signal(dict)
     finish_save = Signal()
     stopped = Signal()
-    def __init__(self,sensor_flags,exp_id,dyad_name,take_num):
+    def __init__(self,sensor_flags,exp_id,subject_name,take_num):
         super().__init__()
         self.sensor_flags = sensor_flags
         self.take_num = take_num
-        self.dyad_path = f"./experiments/{exp_id}/{dyad_name}/"
+        self.dyad_path = f"./experiments/{exp_id}/{subject_name}/"
 
         # FPS Calculator
         self.logger_frame_count = 0
@@ -73,14 +73,14 @@ class FMCLoggerBase(QObject):
         if self.sensor_flags["ss"] == 1:
             if hasattr(self, 'left_hand_response'):
                 print_text += f'LH:{self.left_hand_response["hand_fps"]}\n'
-                np.take(self.left_hand_response["fingers_dict"]["global_t_arr"], [20,21,22,23,24,16,2,17,9],axis=0,out=self.pos_hold_l)
-                np.take(self.left_hand_response["fingers_dict"]["global_quat_arr"], [20,21,22,23,24,16,2,17,9],axis=0,out=self.quat_hold_l)
+                np.take(self.left_hand_response["fingers_dict"]["global_t_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.pos_hold_l)
+                np.take(self.left_hand_response["fingers_dict"]["global_quat_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.quat_hold_l)
                 compressed_info = self.compress_info(self.pos_hold_l,self.quat_hold_l,self.left_hand_response["fingers_dict"]["force_vecs"])
                 self.left_hand_arr.append(compressed_info)
             if hasattr(self, 'right_hand_response'):
                 print_text += f'RH:{self.right_hand_response["hand_fps"]}\n'
-                np.take(self.right_hand_response["fingers_dict"]["global_t_arr"], [20,21,22,23,24,16,2,17,9],axis=0,out=self.pos_hold_r)
-                np.take(self.right_hand_response["fingers_dict"]["global_quat_arr"], [20,21,22,23,24,16,2,17,9],axis=0,out=self.quat_hold_r)
+                np.take(self.right_hand_response["fingers_dict"]["global_t_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.pos_hold_r)
+                np.take(self.right_hand_response["fingers_dict"]["global_quat_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.quat_hold_r)
                 compressed_info = self.compress_info(self.pos_hold_r,self.quat_hold_r,self.right_hand_response["fingers_dict"]["force_vecs"])
                 self.right_hand_arr.append(compressed_info)
         if self.sensor_flags["rft"] == 1 and hasattr(self, 'rft_response'):
@@ -90,7 +90,7 @@ class FMCLoggerBase(QObject):
         # emit the signal
         data = {
             "print_text":print_text,
-            "logger_fps":self.logger_fps
+            "logger_fps":self.logger_fps,
         }
         self.time_ready.emit(data)
     
@@ -152,14 +152,14 @@ class FMCLoggerBase(QObject):
         if self.sensor_flags["ss"] == 1:
             if hasattr(self, 'left_hand_response'):
                 bone_names = []
-                for i in [20,21,22,23,24,16,2,17,9]:
+                for i in [20,21,22,23,24,25,26,27,28]:
                     bone_names.append(self.left_hand_response["fingers_dict"]["names"][i])
                 columns = ["time"]+[f"{bone}_pos_{dim}"for bone in bone_names for dim in ["x","y","z"]]+[f"{bone}_quat_{dim}"for bone in bone_names for dim in ["x","y","z","w"]]+[f"{bone}_f_{dim}"for bone in bone_names for dim in ["x","y","z"]]
                 df = pd.DataFrame(self.left_hand_arr,columns=columns)
                 self.save_file(path=f"{self.dyad_path}/{self.take_num}/",df=df,item="left_hand")
             if hasattr(self, 'right_hand_response'):
                 bone_names = []
-                for i in [20,21,22,23,24,16,2,17,9]:
+                for i in [20,21,22,23,24,25,26,27,28]:
                     bone_names.append(self.right_hand_response["fingers_dict"]["names"][i])
                 columns = ["time"]+[f"{bone}_pos_{dim}"for bone in bone_names for dim in ["x","y","z"]]+[f"{bone}_quat_{dim}"for bone in bone_names for dim in ["x","y","z","w"]]+[f"{bone}_f_{dim}"for bone in bone_names for dim in ["x","y","z"]]
                 df = pd.DataFrame(self.right_hand_arr,columns=columns)

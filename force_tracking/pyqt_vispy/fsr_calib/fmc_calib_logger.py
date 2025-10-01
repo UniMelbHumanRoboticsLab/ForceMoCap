@@ -54,7 +54,7 @@ class FMCLoggerCalib(QObject):
         if self.sensor_flags["esp"] == 1:
             print_text += f'ESP:{self.esp_response["esp_fps"]}\n'
             raw_data = self.esp_response["raw_data"][self.finger_id]
-            self.esp_arr.append([raw_data,1/raw_data*1000])
+            self.esp_arr.append([raw_data])
         if self.sensor_flags["rft"] == 1 and hasattr(self, 'rft_response'):
             print_text += f'RFT:{self.rft_response["rft_fps"]}\n'
             mag = np.linalg.norm(self.rft_response["rft_data_arr"][:3])
@@ -114,7 +114,7 @@ class FMCLoggerCalib(QObject):
 
         if self.sensor_flags["esp"] == 1 and self.sensor_flags["rft"] == 1:
             if hasattr(self, 'esp_response') and hasattr(self, 'rft_response'):
-                columns = ["time","Fx","Fy","Fz","Tx","Ty","Tz","F","R","1/R"]
+                columns = ["time","Fx","Fy","Fz","Tx","Ty","Tz","F","1/R"]
                 total_arr = np.hstack((np.array(self.rft_arr),np.array(self.esp_arr)))
                 df = pd.DataFrame(total_arr,columns=columns)
                 self.save_file(path=f"{self.sensor_path}/",df=df,item=f"force_{self.take_num}")

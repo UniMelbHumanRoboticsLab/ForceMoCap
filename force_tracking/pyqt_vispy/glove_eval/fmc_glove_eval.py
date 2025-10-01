@@ -1,7 +1,7 @@
 import os, sys,json
+from fmc_eval_logger import FMCEvalLogger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from base.fmc_base import FMCBase
-from base.fmc_logger_base import FMCLoggerBase
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from firmware.python.esp_wifi_fsr.esp_udp_fsr_server_qt import ESPUdp
 from firmware.python.pyRFT.rft_uart_server_qt_get_response import RFTSerial
@@ -21,17 +21,18 @@ class FMCGloveEval(FMCBase):
     def __init__(self,init_args):
         self.init_args = init_args
         self.gui_3d_on = self.init_args["init_flags"]["gui_3d_on"]
-        self.force_gui = self.init_args["init_flags"]["force_gui"]
+        self.wrench_gui = self.init_args["init_flags"]["wrench_gui"]
+        self.wrench_type = self.init_args["wrench_type"]
         self.num_closed_threads = 0
         self.num_opened_threads = 0
 
         super().__init__(freq=self.init_args["gui_freq"],gui_3d_on=self.gui_3d_on)
 
-        if self.force_gui["on?"]:
-            if self.force_gui["RFT"] or self.force_gui["SS"]:
-                self.force_3d_live_stream = self.init_live_stream(num_columns=1)
-            if self.force_gui["ESP"]:
-                self.force_esp_live_strean = self.init_live_stream(num_columns=3)
+        if self.wrench_gui["on?"]:
+            if self.wrench_gui["RFT"] or self.wrench_gui["SS"] or self.wrench_gui["feedback"]:
+                self.wrench_fb_live_stream = self.init_live_stream(num_columns=1)
+            if self.wrench_gui["ESP"]:
+                self.force_esp_live_stream = self.init_live_stream(num_columns=3)
             
         # import debugpy
         # debugpy.listen(("localhost", 5678))
@@ -80,15 +81,15 @@ class FMCGloveEval(FMCBase):
                     skeleton[i] = {"pos":distal,"rot":ss_axes,"bones":bones,"force_vec":force_vec}
                 hand["fingers"] = skeleton
             # init glove live stream plots
-            if self.force_gui["on?"] and self.force_gui["SS"]:
-                hand["live_stream_plot"] = self.add_live_stream_plot(live_stream=self.force_3d_live_stream,sensor_name= f"SS_{side}",unit="N",dim=3)
+            if self.wrench_gui["on?"] and self.wrench_gui["SS"]:
+                hand["live_stream_plot"] = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"SS_{side}",unit="N",dim=3)
             self.hands[f"{side}"] = hand
     def init_vive(self):
         # init response label
         self.vive_label = self.init_response_label(size=[500,80])
         # init vive thread and worker
         self.vive_thread = QThread()
-        self.vive_worker = OpenVRServer()
+        self.vive_worker = OpenVRServer(performer_ID=self.init_args["glove_performer"])
         # init vive plots
         if self.gui_3d_on:
             self.marker_list = []
@@ -101,22 +102,24 @@ class FMCGloveEval(FMCBase):
     def init_esp_sensor(self):
         sides = self.init_args["ESP"]["sides"]
         ports = self.init_args["ESP"]["ports"]
+        ips = self.init_args["ESP"]["ips"]
+        server_ports = self.init_args["ESP"]["server_ports"]
         self.force_modules = {}
-        
-        for side,port in zip(sides,ports):
+
+        for side,port,ip,server_port in zip(sides,ports,ips,server_ports):
             force_module = {}
             # init response label
             force_module["response_label"] = self.init_response_label(size=[500,50])
             # init esp thread and worker
             esp_thread = QThread()
-            esp_worker = ESPUdp(port=port,side=side)
+            esp_worker = ESPUdp(port=port,side=side,ip=ip,server_port=server_port)
             force_module["sensor"] = {"thread":esp_thread,
                                       "worker":esp_worker}
             # init esp live stream plot
-            if self.force_gui["on?"] and self.force_gui["ESP"]:
+            if self.wrench_gui["on?"] and self.wrench_gui["ESP"]:
                 esp_live_stream_plots = []
                 for i in range(9):
-                    esp_live_stream_plots.append(self.add_live_stream_plot(live_stream=self.force_esp_live_strean,sensor_name= f"ESP",unit="N",dim=1))
+                    esp_live_stream_plots.append(self.add_live_stream_plot(live_stream=self.force_esp_live_stream,sensor_name= f"ESP",unit="N",dim=1))
                 force_module["live_stream_plots"] = esp_live_stream_plots
             self.force_modules[f"{side}"] = force_module
     def init_rft_sensor(self):
@@ -131,17 +134,21 @@ class FMCGloveEval(FMCBase):
             self.rft_frame = self.init_frame(pos=self.inert_point,rot=self.inert_frame)
             self.rft_force_vec = self.init_line(points=np.vstack([np.array([[0,0,0]]), np.array([[1,1,1]])]),color="orange")
         # init rft live stream plot
-        if self.force_gui["on?"] and self.force_gui["RFT"]:
-            self.rft_live_stream_plot = self.add_live_stream_plot(live_stream=self.force_3d_live_stream,sensor_name= f"RFT",unit="N",dim=3)
-            self.rft_tau_live_stream_plot = self.add_live_stream_plot(live_stream=self.force_3d_live_stream,sensor_name= f"RFT_Tau",unit="Nm",dim=3)
+        if self.wrench_gui["on?"] and self.wrench_gui["RFT"]:
+            self.rft_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"RFT",unit="N",dim=3)
+            self.rft_tau_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"RFT_Tau",unit="Nm",dim=3)
     def init_logger(self):
         # init response label
         self.logger_label = self.init_response_label(size=[500,150])
         self.logger_thread = QThread()
-        self.logger_worker = FMCLoggerBase(sensor_flags=self.init_args["init_flags"],
+        self.logger_worker = FMCEvalLogger(sensor_flags=self.init_args["init_flags"],
                                        exp_id=self.init_args["exp_id"],
-                                       dyad_name=self.init_args["dyad_name"],
-                                       take_num = self.init_args["take_num"] )
+                                       subject_name=self.init_args["subject_name"],
+                                       take_num = self.init_args["take_num"], 
+                                       wrench_type = self.init_args["wrench_type"])
+        # init feedback live stream plot
+        if self.wrench_gui["on?"] and self.wrench_gui["feedback"]:
+            self.feedback_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"Feedback_{self.wrench_type[0]}",unit=self.wrench_type[1],dim=2)
     def init_shortcuts(self):
         # to start / stop logging at button press
         if self.init_args["init_flags"]["log"]  == 1:
@@ -172,8 +179,10 @@ class FMCGloveEval(FMCBase):
             self.init_logger()
             self.logger_response = {
             "print_text":"Idle\n",
-            "logger_fps":0.0
-        }
+            "logger_fps":0,
+            "instruction": "Press S to start",
+            "wrench_instructed": np.array([0])
+            }
         
         """
         Move sensor worker to thread 
@@ -338,7 +347,7 @@ class FMCGloveEval(FMCBase):
         fingers_quat = fingers_data["global_quat_arr"]
         fingers_force_vecs = fingers_data["force_vecs"]
 
-        for distal_name,distal_id,force_vec in zip(["thumb","index","middle","ring","pinky","palm1","palm2","palm3","palm4"],[20,21,22,23,24,16,2,17,9],fingers_force_vecs): 
+        for distal_name,distal_id,force_vec in zip(["thumb","index","middle","ring","pinky","palm1","palm2","palm3","palm4"],[20,21,22,23,24,25,26,27,28],fingers_force_vecs): 
 
             pos = fingers_pos[distal_id]
             rot =  R.from_quat(fingers_quat[distal_id]).as_matrix()*0.01
@@ -359,12 +368,12 @@ class FMCGloveEval(FMCBase):
             self.update_line(plt=hand["fingers"][distal_name]['force_vec'],points=pts)
     def update_gui(self):
         super().update_gui()
-        if self.force_gui["on?"]:
+        if self.wrench_gui["on?"]:
             # update live stream
-            if self.force_gui["RFT"] or self.force_gui["SS"]:
-                self.update_live_stream_buffer(live_stream=self.force_3d_live_stream)
-            if self.force_gui["ESP"]:
-                self.update_live_stream_buffer(live_stream=self.force_esp_live_strean)
+            if self.wrench_gui["RFT"] or self.wrench_gui["SS"] or self.wrench_gui["feedback"]:
+                self.update_live_stream_buffer(live_stream=self.wrench_fb_live_stream)
+            if self.wrench_gui["ESP"]:
+                self.update_live_stream_buffer(live_stream=self.force_esp_live_stream)
         if hasattr(self, 'vive_response'):
             # update vive info
             fps = self.vive_response["vive_fps"]
@@ -391,9 +400,9 @@ class FMCGloveEval(FMCBase):
             if self.gui_3d_on:
                 # update gui
                 self.update_hand_gui("left",self.left_hand_response)
-            if self.force_gui["on?"] and self.force_gui["SS"]:
+            if self.wrench_gui["on?"] and self.wrench_gui["SS"]:
                 # update live stream plot
-                self.update_live_stream_plot(self.force_3d_live_stream,hand["live_stream_plot"],np.sum(self.left_hand_response["fingers_dict"]["force_vecs"],axis=0),dim=3)
+                self.update_live_stream_plot(self.wrench_fb_live_stream,hand["live_stream_plot"],np.sum(self.left_hand_response["fingers_dict"]["force_vecs"],axis=0),dim=3)
         if hasattr(self, 'right_hand_response'):
             # update hand info
             print_text = self.right_hand_response["print_text"]
@@ -404,29 +413,29 @@ class FMCGloveEval(FMCBase):
             if self.gui_3d_on:
                 # update gui
                 self.update_hand_gui("right",self.right_hand_response)
-            if self.force_gui["on?"] and self.force_gui["SS"]:
+            if self.wrench_gui["on?"] and self.wrench_gui["SS"]:
                 # update live stream plot
-                self.update_live_stream_plot(self.force_3d_live_stream,hand["live_stream_plot"],np.sum(self.right_hand_response["fingers_dict"]["force_vecs"],axis=0),dim=3)
+                self.update_live_stream_plot(self.wrench_fb_live_stream,hand["live_stream_plot"],np.sum(self.right_hand_response["fingers_dict"]["force_vecs"],axis=0),dim=3)
         if hasattr(self, 'left_esp_response'):
             # update esp info
             force_module = self.force_modules["left"]      
             force_data = self.left_esp_response["force_data"]
             fps = self.left_esp_response["esp_fps"]
             self.update_response_label(force_module["response_label"],f'FPS:{fps}\n{force_data}')
-            if self.force_gui["on?"] and self.force_gui["ESP"]:
+            if self.wrench_gui["on?"] and self.wrench_gui["ESP"]:
                 # update live stream plot
                 for i,live_stream_plot in enumerate(force_module["live_stream_plots"]):
-                    self.update_live_stream_plot(self.force_esp_live_strean,live_stream_plot,np.array([force_data[i]]),dim=1)
+                    self.update_live_stream_plot(self.force_esp_live_stream,live_stream_plot,np.array([force_data[i]]),dim=1)
         if hasattr(self, 'right_esp_response'):
             # update esp info
             force_module = self.force_modules["right"]      
             force_data = self.right_esp_response["force_data"]
             fps = self.right_esp_response["esp_fps"]
             self.update_response_label(force_module["response_label"],f'FPS:{fps}\n{force_data}')
-            if self.force_gui["on?"] and self.force_gui["ESP"]:
+            if self.wrench_gui["on?"] and self.wrench_gui["ESP"]:
                 # update live stream plot
                 for i,live_stream_plot in enumerate(force_module["live_stream_plots"]):
-                    self.update_live_stream_plot(self.force_esp_live_strean,live_stream_plot,np.array([force_data[i]]),dim=1)
+                    self.update_live_stream_plot(self.force_esp_live_stream,live_stream_plot,np.array([force_data[i]]),dim=1)
         if hasattr(self, 'rft_response'):
             # update rft info
             force_data = self.rft_response["rft_data_arr"]
@@ -442,13 +451,18 @@ class FMCGloveEval(FMCBase):
                 self.update_frame(plt=self.rft_frame,pos=rft_pos,rot=rft_frame) 
                 self.update_line(plt=self.rft_force_vec,points=np.vstack([rft_pos,rft_pos+force_vec[:3]*0.01]))
 
-            if self.force_gui["on?"] and self.force_gui["RFT"]:
-                self.update_live_stream_plot(self.force_3d_live_stream,self.rft_live_stream_plot,force_data,dim=3)
-                self.update_live_stream_plot(self.force_3d_live_stream,self.rft_tau_live_stream_plot,force_data[3:],dim=3)
+            if self.wrench_gui["on?"] and self.wrench_gui["RFT"]:
+                self.update_live_stream_plot(self.wrench_fb_live_stream,self.rft_live_stream_plot,force_data,dim=3)
+                self.update_live_stream_plot(self.wrench_fb_live_stream,self.rft_tau_live_stream_plot,force_data[3:],dim=3)
         if hasattr(self, 'logger_response'):
             print_text = self.logger_response["print_text"]
+            instruction = self.logger_response["instruction"]
+            wrench_instructed = self.logger_response["wrench_instructed"]
             fps = self.logger_response["logger_fps"]
-            self.update_response_label(self.logger_label,f"{print_text}FPS:{fps}")
+            self.update_response_label(self.logger_label,f"{print_text}FPS:{fps}\n{instruction}")
+
+            if self.wrench_gui["on?"] and self.wrench_gui["feedback"]:
+                self.update_live_stream_plot(self.wrench_fb_live_stream,self.feedback_live_stream_plot,wrench_instructed,dim=2)
     
     """
     Cleanup
@@ -487,22 +501,25 @@ if __name__ == "__main__":
         argv = sys.argv[1]
     except:
         argv ={"gui_freq":60,
-               "init_flags":{"vive":1,
-                             "esp":1,
-                             "ss":1,
-                             "rft":1,
-                             "log":1,
-                             "gui_3d_on":True,
-                             "force_gui":{"on?":True,"RFT":True,"ESP":False,"SS":True}},
-               "exp_id":"exp1",
-               "dyad_name":"CA",
-               "glove_performer":"JQ",
-               "take_num":1,
-               "VIVE":2,
-               "RFT":"COM4",
-               "ESP":{"sides":["left"],"ports":[4211]},
-            #    "SS":{"sides":["left","right"],"ports": [9004,9003]}}
-                "SS":{"sides":["left"],"ports": [9004]}}
+                "exp_id":"exp1",
+                "subject_name":"JQ",
+                "glove_performer":"JQ",
+                "init_flags":{"vive":0,
+                                "esp":0,
+                                "ss":0,
+                                "rft":1,
+                                "log":1,
+                                "gui_3d_on":True,
+                                "wrench_gui":{"on?":True,"RFT":False,"ESP":False,"SS":False,"feedback":True}},
+                "wrench_type":["force","N",5],
+                "take_num":0,
+                "VIVE":3,
+                "RFT":"COM5",
+                "ESP":{"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.153.121","192.168.153.28"],"server_ports":[4213,4214]},
+                # "ESP":{"sides":["right"],"ports":[4212],"ips":["192.168.153.28"],"server_ports":[4214]},
+                # "ESP":{"sides":["left"],"ports":[4211],"ip":["192.168.153.121"]},
+                "SS":{"sides":["left","right"],"ports": [9004,9003]}}
+                # "SS":{"sides":["right"],"ports": [9003]}}
         
         argv = json.dumps(argv)
 

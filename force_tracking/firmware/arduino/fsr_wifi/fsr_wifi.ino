@@ -7,12 +7,13 @@
 const char* ssid = "XiaomiJQ";
 const char* password = "jq00170410";
 WiFiUDP Udp;
-unsigned int espPort = 4211;  //  port to listen on
+unsigned int espPort = 4212;  //  port to listen on
 char incomingPacket[255];  // buffer for incoming packets
 
 // FSR
 // int fsrPins[9] = {A0,A1,A2,A3,A4,A5,A8,A9,A10}; //analog pin 0
-int fsrPins[9] = {A5,A3,A1,A8,A10,A4,A2,A0,A9}; //analog pin for Left
+// int fsrPins[9] = {A5,A3,A1,A8,A10,A4,A2,A0,A9}; //analog pin for Left
+int fsrPins[9] = {A0,A5,A3,A8,A10,A1,A4,A2,A9}; //analog pin for Right
 
 float resistor = 2201.0;
 float Vin = 3.3;
@@ -75,12 +76,13 @@ void loop(){
     {
       resistance = 10000000.0;
     }
-    measurements += String(resistance,4) +"\t";
+    float conductance = 1/resistance*1000.0;
+    measurements += String(conductance,4) +"\t";
     // delay(1); // give delay between analog reads
   }
 
   // print measurements:
-  // Serial.println(measurements);
+  Serial.println(measurements);
 
   // send packet
   Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());

@@ -12,17 +12,18 @@ np.set_printoptions(
 
 from PySide6.QtCore import QObject, QThread, Signal,QTimer,Slot,QElapsedTimer, Qt, QMetaObject
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget
-import debugpy
 
 
 class ESPUdp(QObject):
     forces_ready = Signal(dict)
     stopped = Signal()
-    def __init__(self, ip="192.168.153.121", port=4211,side="left"):
+    def __init__(self, ip="192.168.153.121",server_port=4213, port=4211,side="left"):
         super().__init__()
         self.port = port
         self.ip = ip
         self.side = side
+        self.server_port = server_port
+
 
         # get the calibration matrices for each sensor
         self.esp_data_arr = np.zeros((9,1))
@@ -51,7 +52,7 @@ class ESPUdp(QObject):
                 # Create a socket object
                 self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
                 self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                self.server_socket.bind(('', 4212)) # replace the ip with ''
+                self.server_socket.bind(('', self.server_port)) # replace the ip with ''
                 self.server_socket.sendto(bytes("HI", "utf-8"), (self.ip, self.port))
                 break
             except Exception as e:
@@ -93,10 +94,11 @@ class ESPUdp(QObject):
             # calibration regression
             force_data = []
             for esp_data,calib_matrix in zip(esp_data_arr,self.calib_matrices):
-                if esp_data < 0.01:
-                    conductance = 0
-                else:
-                    conductance = 1/esp_data*1000
+                # if esp_data < 0.01:
+                #     conductance = 0
+                # else:
+                #     conductance = 1/esp_data*1000
+                conductance = esp_data
                 force = calib_matrix.predict(np.array([[conductance]]))
                 force_data.append(force[0])
             force_data = np.array(force_data)
@@ -105,13 +107,17 @@ class ESPUdp(QObject):
                 "force_data":force_data,
                 "raw_data":esp_data_arr,
                 "esp_fps":self.esp_fps,
-
             }
             self.forces_ready.emit(data)
         except Exception as e:
             data = {
                 "force_data":np.array([0,0,0,0,0,0,0,0,0]),
                 "esp_fps":self.esp_fps
+            }
+            data = {
+                "force_data":np.array([0,0,0,0,0,0,0,0,0]),
+                "raw_data":np.array([0,0,0,0,0,0,0,0,0]),
+                "esp_fps":self.esp_fps,
             }
             self.forces_ready.emit(data)
 

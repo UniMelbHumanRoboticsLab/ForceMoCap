@@ -13,7 +13,7 @@ for take_num in range(10):
                             "gui_3d_on":False,
                             "force_gui":{"on?":True,"RFT":False,"ESP":True,"SS":False}},
             "exp_id":"exp1",
-            "dyad_name":"CA",
+            "subject_name":"CA",
             "glove_performer":"JQ",
             "take_num":take_num,
             "VIVE":3,

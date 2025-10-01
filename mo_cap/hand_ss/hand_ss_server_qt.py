@@ -15,7 +15,6 @@ from spatialmath import SE3
 
 from PySide6.QtCore import QObject, QThread, Signal,Slot,QTimer,QElapsedTimer,Qt, QMetaObject
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget
-import debugpy
 
 class SSHandClient(QObject):
     hand_ready = Signal(dict)
@@ -47,17 +46,17 @@ class SSHandClient(QObject):
         # init wrist pose
         T = np.eye(4,4)
         if self.side == "left":
-            self.vive_to_hand_rot = SE3.Ry(-90, 'deg') *SE3.Rz(180, 'deg')
+            self.vive_to_hand_rot = SE3.Ry(90, 'deg') * SE3.Rz(180, 'deg')
             T[:3, 3] = np.array([1,0,0])
             self.multiplier = 1
         elif self.side == "right":
-            self.vive_to_hand_rot = SE3.Ry(-90, 'deg')
+            self.vive_to_hand_rot = SE3.Ry(90, 'deg')
             T[:3, 3] = np.array([-1,0,0])
             self.multiplier = -1
         self.wrist_pose = SE3(T)
 
         # init force response
-        self.force_response = np.array([1,1,1,1,1,1,1,1,1])*0.1
+        self.force_response = np.array([1,1,1,1,1,1,1,1,1])*10
         # self.force_response = np.zeros(9)
 
         # FPS Calculator
@@ -106,6 +105,48 @@ class SSHandClient(QObject):
         fingers_dict["quat_arr"] = np.vstack((fingers_dict["quat_arr"],distal_quat_arr))
         distal_trans_arr = np.tile(np.array([self.multiplier*1,0,0]), (len(distal_ids), 1))
         fingers_dict["trans_arr"] = np.vstack((fingers_dict["trans_arr"],distal_trans_arr))
+    def add_palm_spots(self,fingers_dict):
+
+        # add thumb 
+        palm0 = "palm_0"
+        fingers_dict["names"].append(palm0)
+        fingers_dict["parents"].append(5)
+        palm0_trans = (fingers_dict["global_t_arr"][5]+fingers_dict["global_t_arr"][6])/2
+        palm0_quat = fingers_dict["global_quat_arr"][5]
+
+        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm0_trans))
+        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm0_quat))
+
+        # add index-mid 
+        palm1 = "palm_1"
+        fingers_dict["names"].append(palm1)
+        fingers_dict["parents"].append(-1)
+        palm1_trans = (fingers_dict["global_t_arr"][2]+fingers_dict["global_t_arr"][17])/2
+        palm1_quat = fingers_dict["global_quat_arr"][2]
+
+        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm1_trans))
+        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm1_quat))
+
+        # add mid-ring 
+        palm2 = "palm_2"
+        fingers_dict["names"].append(palm2)
+        fingers_dict["parents"].append(-1)
+        palm2_trans = (fingers_dict["global_t_arr"][17]+fingers_dict["global_t_arr"][9])/2
+        palm2_quat = fingers_dict["global_quat_arr"][17]
+
+        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm2_trans))
+        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm2_quat))
+
+        # add ring-pinky 
+        palm3 = "palm_3"
+        fingers_dict["names"].append(palm3)
+        fingers_dict["parents"].append(-1)
+        palm3_trans = (fingers_dict["global_t_arr"][9]+fingers_dict["global_t_arr"][13])/2
+        palm3_quat = fingers_dict["global_quat_arr"][9]
+
+        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm3_trans))
+        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm3_quat))
+
     def get_global_transform_arr(self,fingers_dict):
         quats = fingers_dict["quat_arr"]# shape (N,4)
         quats[0] = np.array([0,0,0,1])# correct the rotation of wrist 
@@ -191,12 +232,16 @@ class SSHandClient(QObject):
                 "quat_arr":quat_arr,
                 "trans_arr":trans_arr
             }
+            
+
             self.add_distals(self.fingers_dict,distal_ids = [7,4,19,11,15])
             self.get_global_transform_arr(self.fingers_dict)
+            self.add_palm_spots(self.fingers_dict)
+            
 
             # process print text and force vectors
             force_vecs = np.zeros((9,3))
-            for i,distal in enumerate([20,21,22,23,24,16,2,17,9]):
+            for i,distal in enumerate([20,21,22,23,24,25,26,27,28]):
                 pos = self.fingers_dict["global_t_arr"][distal]
                 rot = R.from_quat(self.fingers_dict["global_quat_arr"][distal]).as_matrix()
 
@@ -232,15 +277,15 @@ class SSHandClient(QObject):
     @Slot(list)
     def update_wrist(self,vive_response):
         if self.side == "left":
-            cur_marker_pos = vive_response["wrists_pos"][0] # position of wrist in inertial frame
-            cur_marker_frame = R.from_quat(vive_response["wrists_frame"][0]).as_matrix()
+            cur_marker_pos = vive_response["wrists_pos"]["LHR-C700522C"] # position of wrist in inertial frame
+            cur_marker_frame = R.from_quat(vive_response["wrists_frame"]["LHR-C700522C"]).as_matrix()
             T = np.eye(4,4)
             T[:3,:3] = cur_marker_frame
             T[:3, 3] = cur_marker_pos
             self.wrist_pose = SE3(T)
         elif self.side == "right":
-            cur_marker_pos = vive_response["wrists_pos"][1] # position of wrist in inertial frame
-            cur_marker_frame = R.from_quat(vive_response["wrists_frame"][1]).as_matrix()
+            cur_marker_pos = vive_response["wrists_pos"]["LHR-26922E89"] # position of wrist in inertial frame
+            cur_marker_frame = R.from_quat(vive_response["wrists_frame"]["LHR-26922E89"]).as_matrix()
             T = np.eye(4,4)
             T[:3,:3] = cur_marker_frame
             T[:3, 3] = cur_marker_pos

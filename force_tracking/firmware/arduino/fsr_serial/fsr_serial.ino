@@ -25,10 +25,10 @@ void loop(){
     }
     measurements += String(resistance,4) +"\t";
     // measurements += String(fsrReading) +"\t";
-    // delay(1); // give delay between analog reads
+    delay(1); // give delay between analog reads
   }
 
   // print out the value you read:
   Serial.println(measurements);
-  delay(10); //100Hz
+  // delay(10); //100Hz
 }

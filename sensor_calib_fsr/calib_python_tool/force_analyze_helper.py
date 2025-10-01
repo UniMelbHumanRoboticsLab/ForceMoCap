@@ -16,9 +16,10 @@ def scatter_quant_mag(force_df:pd.DataFrame,quantity=["B","F"],case="Train"):
     axs[1].plot(x, label=f'{quantity[0]}')
     axs[1].plot(y, label=f'{quantity[1]}', linestyle='--')
     
-    if "Fp" in quantity:
+    if "F_pred" in quantity:
         r2 = r2_score(x,y)
         axs_0_title += f' (R2: {r2:.2f})'
+        print(f"R2 Score: {r2:.2f}")
         xlim = axs[0].get_xlim()
         ylim = axs[0].get_ylim()
         range_max = max(abs(xlim[1] - xlim[0]), abs(ylim[1] - ylim[0]))
@@ -27,8 +28,13 @@ def scatter_quant_mag(force_df:pd.DataFrame,quantity=["B","F"],case="Train"):
         x_center = sum(xlim) / 2
         y_center = sum(ylim) / 2
 
-        x = [x_center - range_max/2,x_center + range_max/2]
-        y = [y_center - range_max/2,y_center + range_max/2]
+        mini = np.min([x_center - range_max/2,y_center - range_max/2])
+        maxi = np.max([x_center + range_max/2,y_center + range_max/2])
+        
+
+        x = [mini,maxi] 
+        y = [mini,maxi] 
+        # print(x,y)
         axs[0].plot(x,y, label=f'ideal',c = 'k')
         axs[0].set_xlim(x_center - range_max/2, x_center + range_max/2)
         axs[0].set_ylim(y_center - range_max/2, y_center + range_max/2)
@@ -48,9 +54,9 @@ def scatter_quant_mag(force_df:pd.DataFrame,quantity=["B","F"],case="Train"):
 
 def range_quant_mag(force_df:pd.DataFrame,quantity="F",case="Train"):
     force_range = np.array(force_df[f'{quantity}'].agg(['min', 'max']).tolist())
-    print(f"{case} - {quantity}\n\n")
-    print(f"{quantity}: {force_range[0]:.2f} - {force_range[1]:.2f}")
-    print(f"# points: {force_df.shape[0]}\n\n")
+    # print(f"{case} - {quantity}\n\n")
+    # print(f"{quantity}: {force_range[0]:.2f} - {force_range[1]:.2f}")
+    # print(f"# points: {force_df.shape[0]}\n\n")
 
     return force_range
 def hist_quant_mag(force_df:pd.DataFrame,quantity="F",case = "Train"):

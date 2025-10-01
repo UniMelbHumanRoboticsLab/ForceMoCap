@@ -1,0 +1,5 @@
+vive height = 0.044m
+rft height = 18.5mm / 0.0185m
+rft origin from top = 0
+displacement (include rft) = 0.26m
+mdf holder = 10.15mm / 0.01015m

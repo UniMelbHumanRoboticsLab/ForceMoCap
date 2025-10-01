@@ -218,7 +218,7 @@ class FMCCalibFSR(FMCBase):
             # update rft info
             force_data = self.rft_response["rft_data_arr"]
             fps = self.rft_response["rft_fps"]
-            self.update_response_label(self.rft_label,f"FPS:{fps}\n{force_data}")
+            self.update_response_label(self.rft_label,f"FPS:{fps}\n{np.linalg.norm(force_data[:3])}")
             if self.force_gui["on?"] and self.force_gui["RFT"]:
                 self.update_live_stream_plot(self.force_mag_live_stream,self.rft_live_stream_plot,force_data,dim=3)
                 self.update_live_stream_plot(self.force_mag_live_stream,self.rft_tau_live_stream_plot,force_data[3:],dim=3)
@@ -256,15 +256,15 @@ if __name__ == "__main__":
         argv = sys.argv[1]
     except:
         argv ={"gui_freq":60,
-               "init_flags":{"esp":0,
-                             "rft":1,
+               "init_flags":{"esp":1,
+                             "rft":0,
                              "log":1,
                              "gui_3d_on":False,
                              "force_gui":{"on?":True,"RFT":True,"ESP":True}},
                "side":"left",
-               "finger_name":"p4",
-               "finger_id":8,
-               "take_num":1,
+               "finger_name":"f1",
+               "finger_id":0,
+               "take_num":0,
                "RFT":"COM5",
                "ESP":{"sides":["left"],"ports":[4211]}}
         
