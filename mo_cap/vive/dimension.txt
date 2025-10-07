@@ -3,3 +3,77 @@ rft height = 18.5mm / 0.0185m
 rft origin from top = 0
 displacement (include rft) = 0.26m
 mdf holder = 10.15mm / 0.01015m
+
+exercise_list = [
+    {
+        "exe_id": "exe1a1.1",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1a1.2",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1a1.3",
+        "wrench_type": ["force", "N"],
+    },
+
+
+    {
+        "exe_id": "exe1a2.1",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1a2.2",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1a2.3",
+        "wrench_type": ["force", "N"],
+    },
+
+
+
+    {
+        "exe_id": "exe1b1.1",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1b1.2",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1b1.3",
+        "wrench_type": ["moment", "Nm"],
+    },
+    {
+        "exe_id": "exe1b1.4",
+        "wrench_type": ["moment", "Nm"],
+    },
+    {
+        "exe_id": "exe1b1.5",
+        "wrench_type": ["moment", "Nm"],
+    },
+
+
+    {
+        "exe_id": "exe1b2.1",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1b2.2",
+        "wrench_type": ["force", "N"],
+    },
+    {
+        "exe_id": "exe1b2.3",
+        "wrench_type": ["moment", "Nm"],
+    },
+    {
+        "exe_id": "exe1b2.4",
+        "wrench_type": ["moment", "Nm"],
+    },
+    {
+        "exe_id": "exe1b2.5",
+        "wrench_type": ["moment", "Nm"],
+    },
+]

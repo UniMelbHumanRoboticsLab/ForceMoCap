@@ -17,7 +17,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QV
 class ESPUdp(QObject):
     forces_ready = Signal(dict)
     stopped = Signal()
-    def __init__(self, ip="192.168.153.121",server_port=4213, port=4211,side="left"):
+    def __init__(self, ip="192.168.153.121",server_port=4213, port=4211,side="right"):
         super().__init__()
         self.port = port
         self.ip = ip
@@ -30,8 +30,9 @@ class ESPUdp(QObject):
         self.calib_matrices = []
         sensor_list = ["f1","f2","f3","f4","f5","p1","p2","p3","p4"]
         for sensor in sensor_list: # nine sensors per esp, load the calibration_matrices
-            calib_path = os.path.join(f"./sensor_calib_fsr/data/{side}/{sensor}", f"model.pkl")
+            calib_path = os.path.join(f"./sensor_calib_fsr/data/{side}/{sensor}", f"model_{side}_{sensor}.pkl")
             with open(calib_path,'rb') as f:
+                # print(f"Loading {calib_path}")
                 calib_matrix = pkl.load(f)
                 self.calib_matrices.append(calib_matrix)
         
@@ -47,19 +48,20 @@ class ESPUdp(QObject):
     UDP Connection Functions
     """
     def reconnect(self):
-        while True:
-            try:
-                # Create a socket object
-                self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-                self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                self.server_socket.bind(('', self.server_port)) # replace the ip with ''
-                self.server_socket.sendto(bytes("HI", "utf-8"), (self.ip, self.port))
-                break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
+        print("ESP Connecting")
+        try:
+            # Create a socket object
+            self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+            self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.server_socket.bind(('', self.server_port)) # replace the ip with ''
+            self.server_socket.sendto(bytes("HI", "utf-8"), (self.ip, self.port))
+        except Exception as e:
+            print(e)
+            time.sleep(1)
         while self.server_socket.recvfrom(255)[0].decode().strip() != "HI":
             print("Waiting ESP Response")
+        print(self.get_latest())
+        print("ESP Connected")
     def close(self):
         self.esp_msg = "Unknown"
         self.esp_data_arr = np.zeros((9,1))

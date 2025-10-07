@@ -4,6 +4,8 @@
 *.stl
 *.dae
 *.pyc
+*.pdf
+*.txt
 *.urdf
 *.nbc
 *.nbi
@@ -21,8 +23,9 @@
 *.mvns
 *.mvna
 *.png
+*.pptx
+*.fbx
 /force_tracking/electronics/com.github.pcbway.PCBWay-Plug-in-for-Kicad_v1.0.2
 /force_tracking/electronics/kicad_templates-master
 /force_tracking/electronics/forceCap_pcb/forceCap_pcb-backups
 /magnet_force_legacy_files
-experiments/exp1/ForceMoCap Evaluation Protocol.pptx

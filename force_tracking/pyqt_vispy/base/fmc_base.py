@@ -18,8 +18,8 @@ print(use_app('pyside6'))
 import pyqtgraph as pg # use dev pyqtgraph
 pg.setConfigOptions(antialias=False)     # lines render faster
 pg.setConfigOptions(useOpenGL=True)
-pg.setConfigOptions(useCupy=False)
-pg.setConfigOptions(useNumba=False)
+pg.setConfigOptions(useCupy=True)
+pg.setConfigOptions(useNumba=True)
 pg.setConfigOptions(crashWarning=True)
 pg.systemInfo()
 
@@ -41,10 +41,11 @@ class FMCBase(QtWidgets.QMainWindow):
         # self.container and main layout boxes, this is the main box: DONT TOUCH
         self.container = QtWidgets.QWidget()
         self.setCentralWidget(self.container)
-        self.main_layout = QtWidgets.QHBoxLayout()
+        self.main_layout = QtWidgets.QVBoxLayout()
         self.container.setLayout(self.main_layout)
+
         # add your stuff here to the main layout
-        self.labels_layout = QtWidgets.QVBoxLayout()
+        self.labels_layout = QtWidgets.QHBoxLayout()
         self.main_layout.addLayout(self.labels_layout)
         
         # Setup 3D view
@@ -66,7 +67,7 @@ class FMCBase(QtWidgets.QMainWindow):
         self.gui_last_time = self.gui_fps_timer.elapsed()
         self.gui_start_time = self.gui_fps_timer.elapsed()
         self.gui_elapsed_time = 0
-        self.gui_label = self.init_response_label(size=[500,50])
+        # self.gui_label = self.init_response_label(size=[500,50])
 
         self.plt_items = []
 
@@ -82,7 +83,6 @@ class FMCBase(QtWidgets.QMainWindow):
             "num_of_plots":0,
             "num_columns":num_columns
         }
-
         return live_stream
     def add_live_stream_plot(self,live_stream,sensor_name="FSR",unit="N",dim=1):
         r,c = divmod(live_stream["num_of_plots"],live_stream["num_columns"])
@@ -173,7 +173,7 @@ class FMCBase(QtWidgets.QMainWindow):
         plt = scene.visuals.Markers(pos=pos, edge_color=None, face_color=(0.5, 0.5, 0.5, 1),size=12)
         self.view_gui_3d.add(plt)
         return plt
-    def init_response_label(self,size=[500,200]):
+    def init_response_label(self,size=[200,200]):
         response_label = QtWidgets.QLabel("WAITING RESPONSE")
         response_label.setFixedSize(size[0],size[1])
         response_label.setFrameStyle(QtWidgets.QFrame.Shape.Box | QtWidgets.QFrame.Shadow.Plain)
@@ -220,7 +220,7 @@ class FMCBase(QtWidgets.QMainWindow):
             self.gui_fps = self.gui_frame_count * 1000 / (self.gui_cur_time-self.gui_last_time)
             self.gui_last_time = self.gui_cur_time
             self.gui_frame_count = 0
-            self.update_response_label(self.gui_label,f"FPS:{self.gui_fps}\nElapsed Time:{self.gui_elapsed_time:.2f}s")
+            # self.update_response_label(self.gui_label,f"FPS:{self.gui_fps}\nElapsed Time:{self.gui_elapsed_time:.2f}s")
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

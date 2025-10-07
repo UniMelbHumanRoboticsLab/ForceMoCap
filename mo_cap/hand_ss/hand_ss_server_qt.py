@@ -35,7 +35,7 @@ class SSHandClient(QObject):
         self.global_cache = {}
         self.finger_arr_index = {key: idx for idx, key in enumerate(["name","parent","local_T","global_t","global_R"])}
 
-        cur_performer_path = os.path.join(f"{os.path.dirname(__file__)}/hand_measurements/{performer_Id}", f"{side}.csv")
+        cur_performer_path = os.path.join(f"{os.path.dirname(__file__)}/../../experiments/exp1/hand_measurements/{performer_Id}", f"{side}.csv")
         try:
             bone_df = pd.read_csv(cur_performer_path)
         except Exception as e:
@@ -106,7 +106,6 @@ class SSHandClient(QObject):
         distal_trans_arr = np.tile(np.array([self.multiplier*1,0,0]), (len(distal_ids), 1))
         fingers_dict["trans_arr"] = np.vstack((fingers_dict["trans_arr"],distal_trans_arr))
     def add_palm_spots(self,fingers_dict):
-
         # add thumb 
         palm0 = "palm_0"
         fingers_dict["names"].append(palm0)
@@ -164,7 +163,7 @@ class SSHandClient(QObject):
         # now assemble 4×4 transforms: shape (N,4,4)
         T = np.zeros((N,4,4), dtype=float)
         T[:,:3,:3] = rot_mats
-        T[:,:3, 3] = actual_trans/100
+        T[:,:3, 3] = actual_trans/100 # convert to metres
         T[:, 3, 3] = 1
 
         global_T_list = []
@@ -185,8 +184,18 @@ class SSHandClient(QObject):
         MARKER = b'\x00\x00\x11'
         self.buffer_message += self.client_socket.recv(4000).decode('utf-8',errors='replace')
         json_start = self.buffer_message.find(MARKER.decode('utf-8',errors='replace'))
+        while json_start == -1:
+            MARKER = b'\x00\x00\x10'
+            # print("overextended")
+            # import debugpy
+            # debugpy.breakpoint()
+            json_start = self.buffer_message.find(MARKER.decode('utf-8',errors='replace'))
+
         json_end = self.buffer_message.find(']}')
         while json_end == -1:
+            # print(json_start, json_end)
+            # print(self.buffer_message)
+            # self.buffer_message = self.buffer_message[json_start:]
             self.buffer_message += self.client_socket.recv(500).decode('utf-8',errors='replace') # add another buffer of message in case not enuf
             json_start = self.buffer_message.find(MARKER.decode('utf-8',errors='replace'))
             json_end = self.buffer_message.find(']}')
@@ -212,9 +221,12 @@ class SSHandClient(QObject):
             self.time = self.json_data['timecode']
             self.print_text = f"{self.time}\n"
         except Exception as e:
-            print("Over extension detected",e)
+            # print(f"Unexpected {err}, {type(err)}")
+            print("Over extension detected", e)
+            # print(self.buffer_message)
+            # assert 0
             data = {
-                "fingers_dict":self.fingers_dict,
+                "fingers_dict": self.fingers_dict,
                 "print_text":"Error",
                 "hand_fps":self.hand_fps
             }

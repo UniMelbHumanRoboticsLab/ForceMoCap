@@ -7,15 +7,18 @@
 const char* ssid = "XiaomiJQ";
 const char* password = "jq00170410";
 WiFiUDP Udp;
-unsigned int espPort = 4212;  //  port to listen on
 char incomingPacket[255];  // buffer for incoming packets
 
-// FSR
-// int fsrPins[9] = {A0,A1,A2,A3,A4,A5,A8,A9,A10}; //analog pin 0
-// int fsrPins[9] = {A5,A3,A1,A8,A10,A4,A2,A0,A9}; //analog pin for Left
-int fsrPins[9] = {A0,A5,A3,A8,A10,A1,A4,A2,A9}; //analog pin for Right
+// left right shit
+unsigned int espPort = 4211;  //  left port to listen on
+int fsrPins[9] = {A5,A3,A1,A8,A10,A4,A2,A0,A9}; //analog pin for Left
+float resistor[9] = {2191.0,2191.0,2190.0,2191.0,2188.0,2192.0,2197.0,2183.0,2197.0}; // resistance for Left
 
-float resistor = 2201.0;
+// unsigned int espPort = 4212;  //  right port to listen on
+// int fsrPins[9] = {A0,A5,A3,A8,A10,A1,A4,A2,A9}; //analog pin for Right
+// float resistor[9] = {2190.0,2170.0,2193.0,2190.0,2193.0,2190.0,2193.0,2192.0,2162.0}; // resistance for Right
+
+// float resistor = 2201.0;
 float Vin = 3.3;
 String measurements = "";
 
@@ -51,6 +54,7 @@ void setup(){
         incomingPacket[len] = 0;
       }
       Serial.printf("UDP packet contents: %s\n", incomingPacket);
+      delay(2000);
       Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
       Udp.printf("%s\n", incomingPacket);
       Udp.endPacket();
@@ -60,8 +64,6 @@ void setup(){
   digitalWrite(LED_BUILTIN, HIGH);    // turn the LED off
 
   analogReadResolution(12);
-  
-  delay(5000);
   Serial.println("Starting UDP");
 }
 
@@ -71,7 +73,7 @@ void loop(){
   {
     int fsrReading = analogRead(fsrPins[fsrPin]); 
     float Vout = fsrReading * (3.3 / 4095.0);
-    float resistance = resistor*(Vin/Vout-1);
+    float resistance = resistor[fsrPin]*(Vin/Vout-1);
     if (isinf(resistance) | (resistance>10000000.0))
     {
       resistance = 10000000.0;

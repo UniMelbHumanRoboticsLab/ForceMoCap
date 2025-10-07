@@ -34,7 +34,7 @@ def pred_model(force_df:pd.DataFrame,calib_matrix):
     return pd.concat([force_df,pred_df,error_df], axis=1)
 
 if __name__ == "__main__":
-    for hand in ["left"]:
+    for hand in ["left","right"]:
         for sensor in ["f1","f2","f3","f4","f5","p1","p2","p3","p4"]:
             # training sample
             models = ["linreg_sgd_1_1"]
@@ -76,7 +76,8 @@ if __name__ == "__main__":
                     scatter_quant_mag(pred_df,["F","F_pred"],case=f"Test Eval")
                 
                 # save model and figures
-                calib_path = os.path.join(f"./sensor_calib_fsr/data/{hand}/{sensor}", f"model.pkl")
+                calib_path = os.path.join(f"./sensor_calib_fsr/data/{hand}/{sensor}", f"model_{hand}_{sensor}.pkl")
+                print(calib_path)
                 print(f"M={calib_matrix._final_estimator.coef_[0]:.2f},b={calib_matrix._final_estimator.intercept_:.2f}")
                 with open(calib_path,'wb') as f:
                     pickle.dump(calib_matrix,f)
@@ -98,5 +99,5 @@ if __name__ == "__main__":
                     fig_path = os.path.join(f"./sensor_calib_fsr/data/{hand}/{sensor}/analysis", f"{i}.png")
                     fig.savefig(fig_path)
                 # plt.tight_layout()
-                # plt.show()
+                plt.show()
                 plt.close('all')

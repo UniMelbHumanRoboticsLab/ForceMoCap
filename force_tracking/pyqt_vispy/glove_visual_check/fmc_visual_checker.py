@@ -22,28 +22,28 @@ class FMCVisualChecker(QObject):
     time_ready = Signal(dict)
     finish_save = Signal()
     stopped = Signal()
-    def __init__(self,sensor_flags,sides,exp_id,subject_name,take_num):
+    def __init__(self,sensor_flags,sides,exp_id,subject_name,exe_id,wrench_type):
+
         super().__init__()
         self.sensor_flags = sensor_flags
         self.sides = sides
-        self.wrench_type = sensor_flags["wrench_type"][1]
-        self.dyad_path = f"./experiments/{exp_id}/{subject_name}/"
-        self.take_num = take_num
+        self.wrench_type = wrench_type
+        self.data_path = f"./experiments/{exp_id}/data/{subject_name}/{exe_id}/{wrench_type[0]}_{wrench_type[2]}"
 
         # read logged data
         if self.sensor_flags["ss"] == 1:
             if "left" in self.sides:
-                self.left_hand_data, self.left_hand_col,self.left_hand_indices = read_hand_csv(f"{self.dyad_path}/{self.take_num}", "left")
+                self.left_hand_data, self.left_hand_col,self.left_hand_indices = read_hand_csv(f"{self.data_path}/", "left")
             else:
                 self.left_hand_data = 0
                 
             if "right" in self.sides:
-                self.right_hand_data, self.right_hand_col,self.right_hand_indices = read_hand_csv(f"{self.dyad_path}/{self.take_num}", "right")
+                self.right_hand_data, self.right_hand_col,self.right_hand_indices = read_hand_csv(f"{self.data_path}/", "right")
             else:
                 self.right_hand_data = 0
 
         if self.sensor_flags["rft"] == 1:
-            self.rft = pd.read_csv(f"{self.dyad_path}/{self.take_num}/rft_wrenches.csv").to_numpy()
+            self.rft = pd.read_csv(f"{self.data_path}/rft_wrenches.csv").to_numpy()
         else:
             self.rft = 0
 
@@ -114,7 +114,7 @@ class FMCVisualChecker(QObject):
         # process rft
         if self.sensor_flags["rft"] == 1:
             rft_data = {
-                "rft_data_arr":self.rft[self.frame_id,2:],
+                "rft_data_arr":self.rft[self.frame_id,3:],
                 "rft_pose":SE3()}
             measured_wrench = np.array([np.linalg.norm(rft_data["rft_data_arr"][:3])]) if self.wrench_type=="force" else np.array([np.linalg.norm(rft_data["rft_data_arr"][:3])])
         else:

@@ -48,15 +48,16 @@ class FMCCalibFSR(FMCBase):
     def init_esp_sensor(self):
         sides = self.init_args["ESP"]["sides"]
         ports = self.init_args["ESP"]["ports"]
+        ips = self.init_args["ESP"]["ips"]
         self.force_modules = {}
         
-        for side,port in zip(sides,ports):
+        for side,port,ip in zip(sides,ports,ips):
             force_module = {}
             # init response label
             force_module["response_label"] = self.init_response_label(size=[500,50])
             # init esp thread and worker
             esp_thread = QThread()
-            esp_worker = ESPUdp(port=port,side=side)
+            esp_worker = ESPUdp(port=port,side=side,ip=ip)
             force_module["sensor"] = {"thread":esp_thread,
                                       "worker":esp_worker}
             # init esp live stream plot

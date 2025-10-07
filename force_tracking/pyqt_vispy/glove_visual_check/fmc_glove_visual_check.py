@@ -17,7 +17,7 @@ class FMCGloveVC(FMCBase):
         self.init_args = init_args
         self.gui_3d_on = self.init_args["init_flags"]["gui_3d_on"]
         self.wrench_gui = self.init_args["init_flags"]["wrench_gui"]
-        self.wrench_type = self.init_args["init_flags"]["wrench_type"]
+        self.wrench_type = self.init_args["wrench_type"]
         self.num_closed_threads = 0
         self.num_opened_threads = 0
 
@@ -47,7 +47,7 @@ class FMCGloveVC(FMCBase):
                     # init distal position
                     distal = self.init_point(pos=np.array([[0.5,0.5,0.5]]),col=(1,0,0,1))
                     # init distal frame
-                    ss_axes = self.init_frame(pos=np.array([[0,0,0]]),rot=self.inert_frame * 0.1 )
+                    ss_axes = self.init_frame(pos=np.array([[0,0,0]]),rot=self.inert_frame * 0.1)
                     # init force vecs
                     force_vec = self.init_line(points=np.vstack([np.array([[0,0,0]]), np.array([[1,1,1]])]),color="orange")
 
@@ -75,7 +75,8 @@ class FMCGloveVC(FMCBase):
                                           sides=self.init_args["SS"]["sides"],
                                           exp_id=self.init_args["exp_id"],
                                           subject_name=self.init_args["subject_name"],
-                                          take_num=self.init_args["take_num"])
+                                          exe_id=self.init_args["exe_id"],
+                                          wrench_type=self.wrench_type)
         # init feedback live stream plot
         if self.wrench_gui["on?"] and self.wrench_gui["feedback"]:
             self.feedback_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"Feedback_{self.wrench_type[0]}",unit=self.wrench_type[1],dim=1)
@@ -247,17 +248,17 @@ if __name__ == "__main__":
         argv = sys.argv[1]
     except:
         argv ={"gui_freq":60,
+               "exp_id":"exp1",
+               "subject_name":"JQ",
+               "glove_performer":"JQ",
+               "exe_id":"exe1",
                "init_flags":{"ss":1,
                              "rft":1,
                              "visual_check":1,
                              "gui_3d_on":True,
-                             "wrench_gui":{"on?":True,"RFT":True,"SS":False,"feedback":True},
-                             "wrench_type":["force","N"]},
-               "exp_id":"exp1",
-               "subject_name":"CA",
-               "glove_performer":"JQ",
-               "take_num":1,
-                "SS":{"sides":["left","right"]}}
+                             "wrench_gui":{"on?":True,"RFT":True,"SS":False,"feedback":True}},
+                "wrench_type":["force","N",10],
+                "SS":{"sides":["right"]}}
         
         argv = json.dumps(argv)
 

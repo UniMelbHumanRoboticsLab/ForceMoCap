@@ -44,12 +44,26 @@ class FMCGloveEval(FMCBase):
         self.init_sensors()
         self.init_shortcuts()
 
+        self.requested_sensor_num = self.init_args["init_flags"]["vive"] + self.init_args["init_flags"]["esp"] + self.init_args["init_flags"]["ss"] + self.init_args["init_flags"]["rft"] + self.init_args["init_flags"]["log"]
+
+        if self.init_args["init_flags"]["ss"]  == 1:
+            if len(self.init_args["SS"]["sides"])>1:
+                self.requested_sensor_num += 1
+        if self.init_args["init_flags"]["esp"]  == 1:
+            if len(self.init_args["ESP"]["sides"])>1:
+                self.requested_sensor_num += 1
+
     """
     Init Sensor Worker / Thread / GUI Helper Functions
     """
     def add_opened_threads(self):
         self.num_opened_threads += 1
-        print(f"Threads Opened:{self.num_opened_threads}")
+        print(f"Threads Opened:{self.num_opened_threads}")        
+        
+        if self.num_opened_threads == self.requested_sensor_num:
+            print("All Threads Opened")
+            if self.init_args["init_flags"]["log"] == 1:
+                QMetaObject.invokeMethod(self.logger_worker, "sensors_ready", Qt.ConnectionType.QueuedConnection)
     def init_hands(self):
         sides = self.init_args["SS"]["sides"]
         ports = self.init_args["SS"]["ports"]
@@ -86,7 +100,7 @@ class FMCGloveEval(FMCBase):
             self.hands[f"{side}"] = hand
     def init_vive(self):
         # init response label
-        self.vive_label = self.init_response_label(size=[500,80])
+        self.vive_label = self.init_response_label(size=[300,80])
         # init vive thread and worker
         self.vive_thread = QThread()
         self.vive_worker = OpenVRServer(performer_ID=self.init_args["glove_performer"])
@@ -124,7 +138,7 @@ class FMCGloveEval(FMCBase):
             self.force_modules[f"{side}"] = force_module
     def init_rft_sensor(self):
         # init response label
-        self.rft_label = self.init_response_label(size=[500,50])
+        self.rft_label = self.init_response_label(size=[300,50])
         # init rft thread and worker
         self.rft_thread = QThread()
         self.rft_worker = RFTSerial(port=self.init_args["RFT"])
@@ -139,12 +153,12 @@ class FMCGloveEval(FMCBase):
             self.rft_tau_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"RFT_Tau",unit="Nm",dim=3)
     def init_logger(self):
         # init response label
-        self.logger_label = self.init_response_label(size=[500,150])
+        self.logger_label = self.init_response_label(size=[200,150])
         self.logger_thread = QThread()
         self.logger_worker = FMCEvalLogger(sensor_flags=self.init_args["init_flags"],
                                        exp_id=self.init_args["exp_id"],
                                        subject_name=self.init_args["subject_name"],
-                                       take_num = self.init_args["take_num"], 
+                                       exe_id=self.init_args["exe_id"],
                                        wrench_type = self.init_args["wrench_type"])
         # init feedback live stream plot
         if self.wrench_gui["on?"] and self.wrench_gui["feedback"]:
@@ -158,7 +172,6 @@ class FMCGloveEval(FMCBase):
             # to stop logging and close everything
             stop_log = QShortcut("C", self)
             stop_log.activated.connect(self.logger_worker.reset_logger)
-            stop_log.activated.connect(self.gui_timer.stop)
             
         close = QShortcut("Q", self)
         close.activated.connect(self.gui_timer.stop)
@@ -167,6 +180,14 @@ class FMCGloveEval(FMCBase):
         """
         Init sensor thread and worker
         """
+        if self.init_args["init_flags"]["log"] == 1:
+            self.init_logger()
+            self.logger_response = {
+            "print_text":"Sensors Not Ready\n",
+            "logger_fps":0,
+            "instruction": "Wait for Sensors",
+            "wrench_instructed": np.array([0])
+            }
         if self.init_args["init_flags"]["vive"] == 1:
             self.init_vive()
         if self.init_args["init_flags"]["esp"] == 1:
@@ -175,15 +196,7 @@ class FMCGloveEval(FMCBase):
             self.init_hands()
         if self.init_args["init_flags"]["rft"] == 1:
             self.init_rft_sensor()
-        if self.init_args["init_flags"]["log"] == 1:
-            self.init_logger()
-            self.logger_response = {
-            "print_text":"Idle\n",
-            "logger_fps":0,
-            "instruction": "Press S to start",
-            "wrench_instructed": np.array([0])
-            }
-        
+
         """
         Move sensor worker to thread 
         Connect intersensor signals
@@ -230,7 +243,7 @@ class FMCGloveEval(FMCBase):
                 if self.init_args["init_flags"]["vive"]  == 1:
                     self.vive_worker.markers_ready.connect(self.hands[side]["sensor"]["worker"].update_wrist,type=Qt.ConnectionType.QueuedConnection)
                 # connect esp to hand
-                if self.init_args["init_flags"]["esp"]  == 1 and side == "left":
+                if self.init_args["init_flags"]["esp"]  == 1 :
                     self.force_modules[side]["sensor"]["worker"].forces_ready.connect(self.hands[side]["sensor"]["worker"].update_force,type=Qt.ConnectionType.QueuedConnection)
                 # connect to sensor gui
                 if side == "left":
@@ -483,6 +496,8 @@ class FMCGloveEval(FMCBase):
         if hasattr(self, 'right_esp_response'):
             self.close_worker_thread(self.force_modules["right"]["sensor"]["worker"])
         if hasattr(self, 'logger_response'):
+            # import time
+            # time.sleep(5)
             self.close_worker_thread(self.logger_worker)
     @Slot()
     def close_app(self):
@@ -504,25 +519,27 @@ if __name__ == "__main__":
                 "exp_id":"exp1",
                 "subject_name":"JQ",
                 "glove_performer":"JQ",
-                "init_flags":{"vive":0,
-                                "esp":0,
-                                "ss":0,
+                "exe_id":"exe1",
+                "init_flags":{"vive":1,
+                                "esp":1,
+                                "ss":1,
                                 "rft":1,
                                 "log":1,
                                 "gui_3d_on":True,
-                                "wrench_gui":{"on?":True,"RFT":False,"ESP":False,"SS":False,"feedback":True}},
-                "wrench_type":["force","N",5],
-                "take_num":0,
+                                "wrench_gui":{"on?":True,"RFT":True,"ESP":False,"SS":False,"feedback":False}},
+                "wrench_type":["force","N",10],
                 "VIVE":3,
-                "RFT":"COM5",
-                "ESP":{"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.153.121","192.168.153.28"],"server_ports":[4213,4214]},
-                # "ESP":{"sides":["right"],"ports":[4212],"ips":["192.168.153.28"],"server_ports":[4214]},
-                # "ESP":{"sides":["left"],"ports":[4211],"ip":["192.168.153.121"]},
-                "SS":{"sides":["left","right"],"ports": [9004,9003]}}
-                # "SS":{"sides":["right"],"ports": [9003]}}
-        
-        argv = json.dumps(argv)
+                "RFT":"COM4",
+                # "ESP":{"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.240.121","192.168.240.27"],"server_ports":[4213,4214]},
+                # "SS":{"sides":["left","right"],"ports": [9004,9003]}}
 
+                "ESP":{"sides":["right"],"ports":[4212],"ips":["192.168.240.27"],"server_ports":[4214]},
+                "SS":{"sides":["right"],"ports": [9003]}}
+        
+                # "ESP":{"sides":["left"],"ports":[4211],"ips":["192.168.240.121"],"server_ports":[4213]},        
+                # "SS":{"sides":["left"],"ports": [9004]}}
+                
+        argv = json.dumps(argv)
     init_args = json.loads(argv)
     app = QtWidgets.QApplication(sys.argv)
     w = FMCGloveEval(init_args)

@@ -126,6 +126,7 @@ class RFTSerial(QObject):
         filter2_response = responseReadFilter(self.getResponse(ID_READ_FILTER,filter2_cmd))
         print(f"RFT Response:{filter_response} \t\tFilter Settings:{filter2_response}")
 
+        print()
         print(f"Soft Bias:{self.softTare()}")
         self.ser.reset_input_buffer()
 

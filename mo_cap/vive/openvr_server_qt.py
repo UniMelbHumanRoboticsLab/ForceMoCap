@@ -13,7 +13,7 @@ class OpenVRServer(QObject):
         super().__init__()
         self.ground_tracker_rotation = SO3().Rz(180, 'deg').R @ SO3().Rx(90, 'deg').R 
         
-        json_path = os.path.join(f"{os.path.dirname(__file__)}/../hand_ss/hand_measurements/{performer_ID}", "wrist.json")
+        json_path = os.path.join(f"{os.path.dirname(__file__)}/../../experiments/exp1/hand_measurements/{performer_ID}", "wrist.json")
         with open(json_path, 'r') as f:
                 data = json.load(f)
         self.right_wrist_offset = np.array(data['right_wrist_offset'])  
