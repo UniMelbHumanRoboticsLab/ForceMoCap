@@ -13,7 +13,7 @@ from PySide6.QtCore import QTimer,Qt
 from PySide6.QtGui import QFont
 from vispy import scene
 from vispy.app import use_app
-print(use_app('pyside6'))
+# print(use_app('pyside6'))
 
 import pyqtgraph as pg # use dev pyqtgraph
 pg.setConfigOptions(antialias=False)     # lines render faster
@@ -21,9 +21,9 @@ pg.setConfigOptions(useOpenGL=True)
 pg.setConfigOptions(useCupy=True)
 pg.setConfigOptions(useNumba=True)
 pg.setConfigOptions(crashWarning=True)
-pg.systemInfo()
+# pg.systemInfo()
 
-N_buffer = 100
+N_buffer = 50
 # Disable mouse wheel zooming in plots for pyqtgraph
 class NoWheelViewBox(pg.ViewBox):
     def __init__(self):
@@ -84,7 +84,7 @@ class FMCBase(QtWidgets.QMainWindow):
             "num_columns":num_columns
         }
         return live_stream
-    def add_live_stream_plot(self,live_stream,sensor_name="FSR",unit="N",dim=1):
+    def add_live_stream_plot(self,live_stream,sensor_name="FSR",unit="N",dim=1,autoscale=True,max_range=10):
         r,c = divmod(live_stream["num_of_plots"],live_stream["num_columns"])
         vb = NoWheelViewBox()
         plt = live_stream["widget"].addPlot(row=r, col=c,viewBox=vb)
@@ -93,6 +93,11 @@ class FMCBase(QtWidgets.QMainWindow):
         plt.setLabel('bottom', 'Time (s)')
         plt.addLegend(offset=(10, 10))
         plt.showGrid(x=False, y=True)
+        # Disable autoscale
+        if not autoscale:
+            plt.enableAutoRange(True, False)  # Disable for both x and y axes
+            # plt.setXRange(-1, 0)  # Match the time_buffer range
+            plt.setYRange(0, max_range*1.25)  # Set an appropriate Y range based on your data
         self.plt_items.append(plt)
         live_stream["num_of_plots"] += 1
         
@@ -127,7 +132,8 @@ class FMCBase(QtWidgets.QMainWindow):
         }
         return live_stream_plot
     def init_gui_3d(self):
-        self.canvas_gui_3d = scene.SceneCanvas(keys='interactive', show=True)
+        self.canvas_gui_3d = scene.SceneCanvas(keys='interactive', show=True,size=(800, 300))
+        self.canvas_gui_3d
         self.canvas_gui_3d.create_native()
         self.main_layout.addWidget(self.canvas_gui_3d.native)
         self.view_gui_3d = self.canvas_gui_3d.central_widget.add_view()

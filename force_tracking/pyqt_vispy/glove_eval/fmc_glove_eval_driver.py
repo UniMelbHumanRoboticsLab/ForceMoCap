@@ -89,10 +89,10 @@ ss_info = {"sides":["right"],"ports": [9003]}
 for exe_cat in exercises_list:
     random.shuffle(exe_cat)
     for exercise in exe_cat:
+        exercise["exe_id"] = "exe1b1.1"
         # show exercise to participant
         images_path = os.path.join(f"./experiments/{exp_id}/protocol/exercise_images", f"{exercise['exe_id']}.png")
-        print()
-        print("========================================================")
+        print("\n========================================================")
         print(images_path)
         img = mpimg.imread(images_path)
         plt.figure(figsize=(12, 12))  # width, height in inches
@@ -107,14 +107,15 @@ for exe_cat in exercises_list:
         elif exercise["wrench_type"][0] == "moment":
             wrench_levels = [0.5,1,1.5,2]
         if exercise["exe_id"] == "exe1b1.1" or exercise["exe_id"] == "exe1b2.1":
-            wrench_levels = [1]
+            wrench_levels = [5]
         if exercise["exe_id"] == "exe1b1.5":
             wrench_levels = [0.25,0.5]
         if exercise["exe_id"] == "exe1b2.5":
             wrench_levels = [0.25,0.5,0.75,1]
 
+        max_range = wrench_levels[-1]
         random.shuffle(wrench_levels)
-
+        
         for wrench_level in wrench_levels:
             # print(wrench_level)
             argv ={"gui_freq":60,
@@ -125,13 +126,13 @@ for exe_cat in exercises_list:
                     "init_flags":{"vive":0,
                                     "esp":0,
                                     "ss":0,
-                                    "rft":0,
+                                    "rft":1,
                                     "log":1,
                                     "gui_3d_on":True,
                                     "wrench_gui":{"on?":True,"RFT":False,"ESP":False,"SS":False,"feedback":True}},
-                    "wrench_type":exercise["wrench_type"]+[wrench_level],
+                    "wrench_type":exercise["wrench_type"]+[wrench_level,max_range],
                     "VIVE":2,
-                    "RFT":"COM5",
+                    "RFT":"COM4",
                     "ESP":esp_info,
                     # "ESP":{"sides":["right"],"ports":[4212],"ips":["192.168.153.28"],"server_ports":[4214]},
                     # "ESP":{"sides":["left"],"ports":[4211],"ip":["192.168.153.121"]},
@@ -140,7 +141,7 @@ for exe_cat in exercises_list:
 
             argv = json.dumps(argv)
 
-            print(f"=== Session {exercise['exe_id']}_{wrench_level} started ===")
+            print(f"\n=== Session {exercise['exe_id']}_{wrench_level} started ===")
             rc = subprocess.call(
                 [sys.executable, SCRIPT,str(argv)],
                 env=os.environ,
@@ -149,12 +150,16 @@ for exe_cat in exercises_list:
                 print(f"Session {exercise}_{wrench_level} exited with {rc}, stopping.")
                 break
 
+        print(f"\n=== Session {exercise['exe_id']} ended ===\n")
+        print("========================================================\n")
         go_on = input("Continue with next exercise?: y/n: ")
         while (go_on != "y" and go_on != "n"):
             go_on = input("Continue?: Reenter y/n: ")
         if go_on == "y":
+            p = "Y"
             pass
         elif go_on == "n":
+            p = "N"
             break
-        print("========================================================")
-        print()
+    if p == "N":
+        break

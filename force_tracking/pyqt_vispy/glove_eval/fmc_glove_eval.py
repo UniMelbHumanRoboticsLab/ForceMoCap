@@ -162,7 +162,7 @@ class FMCGloveEval(FMCBase):
                                        wrench_type = self.init_args["wrench_type"])
         # init feedback live stream plot
         if self.wrench_gui["on?"] and self.wrench_gui["feedback"]:
-            self.feedback_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"Feedback_{self.wrench_type[0]}",unit=self.wrench_type[1],dim=2)
+            self.feedback_live_stream_plot = self.add_live_stream_plot(live_stream=self.wrench_fb_live_stream,sensor_name= f"Feedback_{self.wrench_type[0]}",unit=self.wrench_type[1],dim=2,autoscale=False,max_range=self.wrench_type[-1])
     def init_shortcuts(self):
         # to start / stop logging at button press
         if self.init_args["init_flags"]["log"]  == 1:
@@ -527,7 +527,7 @@ if __name__ == "__main__":
                                 "log":1,
                                 "gui_3d_on":True,
                                 "wrench_gui":{"on?":True,"RFT":True,"ESP":False,"SS":False,"feedback":False}},
-                "wrench_type":["force","N",10],
+                "wrench_type":["force","N",10,20],
                 "VIVE":3,
                 "RFT":"COM4",
                 # "ESP":{"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.240.121","192.168.240.27"],"server_ports":[4213,4214]},
