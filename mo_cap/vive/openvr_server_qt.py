@@ -70,7 +70,7 @@ class OpenVRServer(QObject):
                 else:
                     inert_T = SE3.Rt(R_inert.as_matrix(),pos_inert)
                     cur_point = ground_T.inv()@inert_T
-                    pos_inert = cur_point.t+np.array([0,0,0.26-0.01015-0.0185]) # shift the origin down a bit
+                    pos_inert = cur_point.t+np.array([0,0,0.267-0.048]) # 0.267 - mdf to top, 0.048 mdf to rft
                     R_inert = R.from_matrix(cur_point.R) # correct the orientation to inertial frame
                     quat_inert = R_inert.as_quat()
 

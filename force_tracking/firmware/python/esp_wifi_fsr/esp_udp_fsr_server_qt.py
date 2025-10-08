@@ -102,6 +102,8 @@ class ESPUdp(QObject):
                 #     conductance = 1/esp_data*1000
                 conductance = esp_data
                 force = calib_matrix.predict(np.array([[conductance]]))
+                if force[0] < 0:
+                    force[0] = 0
                 force_data.append(force[0])
             force_data = np.array(force_data)
             

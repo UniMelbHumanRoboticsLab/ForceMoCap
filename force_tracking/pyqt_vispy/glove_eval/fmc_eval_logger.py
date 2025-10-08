@@ -35,6 +35,9 @@ class FMCEvalLogger(QObject):
             (1, self.wrench_level, 2),     # 25-30s: maintain 15N
             (2, self.wrench_level, 5),       # 30-33s: Rest
             (0, 0, 3),   # 23-25s: apply 15N
+            # (1, self.wrench_level, 2),     # 25-30s: maintain 15N
+            # (2, self.wrench_level, 5),       # 30-33s: Rest
+            # (0, 0, 3),   # 23-25s: apply 15N
         ]
 
         # self.wrench_protocol = [
@@ -125,14 +128,14 @@ class FMCEvalLogger(QObject):
             if self.sensor_flags["ss"] == 1:
                 if hasattr(self, 'left_hand_response'):
                     print_text += f'LH:{self.left_hand_response["hand_fps"]}\n'
-                    np.take(self.left_hand_response["fingers_dict"]["global_t_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.pos_hold_l)
-                    np.take(self.left_hand_response["fingers_dict"]["global_quat_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.quat_hold_l)
+                    np.take(self.left_hand_response["fingers_dict"]["global_t_vecs"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.pos_hold_l)
+                    np.take(self.left_hand_response["fingers_dict"]["global_quat_vecs"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.quat_hold_l)
                     compressed_info = self.compress_info(self.pos_hold_l,self.quat_hold_l,self.left_hand_response["fingers_dict"]["force_vecs"])
                     self.left_hand_arr.append(compressed_info)
                 if hasattr(self, 'right_hand_response'):
                     print_text += f'RH:{self.right_hand_response["hand_fps"]}\n'
-                    np.take(self.right_hand_response["fingers_dict"]["global_t_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.pos_hold_r)
-                    np.take(self.right_hand_response["fingers_dict"]["global_quat_arr"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.quat_hold_r)
+                    np.take(self.right_hand_response["fingers_dict"]["global_t_vecs"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.pos_hold_r)
+                    np.take(self.right_hand_response["fingers_dict"]["global_quat_vecs"], [20,21,22,23,24,25,26,27,28],axis=0,out=self.quat_hold_r)
                     compressed_info = self.compress_info(self.pos_hold_r,self.quat_hold_r,self.right_hand_response["fingers_dict"]["force_vecs"])
                     self.right_hand_arr.append(compressed_info)
             if self.sensor_flags["rft"] == 1 and hasattr(self, 'rft_response'):

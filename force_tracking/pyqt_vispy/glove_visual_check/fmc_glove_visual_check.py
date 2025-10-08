@@ -159,8 +159,8 @@ class FMCGloveVC(FMCBase):
     """
     def update_hand_gui(self,side,hand_response):
         hand = self.hands[side]
-        fingers_pos = hand_response["global_t_arr"]
-        fingers_quat = hand_response["global_quat_arr"]
+        fingers_pos = hand_response["global_t_vecs"]
+        fingers_quat = hand_response["global_quat_vecs"]
         fingers_force_vecs = hand_response["force_vecs"]
 
         for distal_name,finger_pos,finger_quat,force_vec in zip(["thumb","index","middle","ring","pinky","palm_0","palm_1","palm_2","palm_3"],fingers_pos,fingers_quat,fingers_force_vecs): 
@@ -257,7 +257,7 @@ if __name__ == "__main__":
                              "visual_check":1,
                              "gui_3d_on":True,
                              "wrench_gui":{"on?":True,"RFT":True,"SS":False,"feedback":True}},
-                "wrench_type":["force","N",10],
+                "wrench_type":["force","N",15],
                 "SS":{"sides":["right"]}}
         
         argv = json.dumps(argv)

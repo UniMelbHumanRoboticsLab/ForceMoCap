@@ -110,41 +110,41 @@ class SSHandClient(QObject):
         palm0 = "palm_0"
         fingers_dict["names"].append(palm0)
         fingers_dict["parents"].append(5)
-        palm0_trans = (fingers_dict["global_t_arr"][5]+fingers_dict["global_t_arr"][6])/2
-        palm0_quat = fingers_dict["global_quat_arr"][5]
+        palm0_trans = (fingers_dict["global_t_vecs"][5]+fingers_dict["global_t_vecs"][6])/2
+        palm0_quat = fingers_dict["global_quat_vecs"][5]
 
-        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm0_trans))
-        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm0_quat))
+        fingers_dict["global_t_vecs"] = np.vstack((fingers_dict["global_t_vecs"],palm0_trans))
+        fingers_dict["global_quat_vecs"] = np.vstack((fingers_dict["global_quat_vecs"],palm0_quat))
 
         # add index-mid 
         palm1 = "palm_1"
         fingers_dict["names"].append(palm1)
         fingers_dict["parents"].append(-1)
-        palm1_trans = (fingers_dict["global_t_arr"][2]+fingers_dict["global_t_arr"][17])/2
-        palm1_quat = fingers_dict["global_quat_arr"][2]
+        palm1_trans = (fingers_dict["global_t_vecs"][2]+fingers_dict["global_t_vecs"][17])/2
+        palm1_quat = fingers_dict["global_quat_vecs"][2]
 
-        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm1_trans))
-        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm1_quat))
+        fingers_dict["global_t_vecs"] = np.vstack((fingers_dict["global_t_vecs"],palm1_trans))
+        fingers_dict["global_quat_vecs"] = np.vstack((fingers_dict["global_quat_vecs"],palm1_quat))
 
         # add mid-ring 
         palm2 = "palm_2"
         fingers_dict["names"].append(palm2)
         fingers_dict["parents"].append(-1)
-        palm2_trans = (fingers_dict["global_t_arr"][17]+fingers_dict["global_t_arr"][9])/2
-        palm2_quat = fingers_dict["global_quat_arr"][17]
+        palm2_trans = (fingers_dict["global_t_vecs"][17]+fingers_dict["global_t_vecs"][9])/2
+        palm2_quat = fingers_dict["global_quat_vecs"][17]
 
-        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm2_trans))
-        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm2_quat))
+        fingers_dict["global_t_vecs"] = np.vstack((fingers_dict["global_t_vecs"],palm2_trans))
+        fingers_dict["global_quat_vecs"] = np.vstack((fingers_dict["global_quat_vecs"],palm2_quat))
 
         # add ring-pinky 
         palm3 = "palm_3"
         fingers_dict["names"].append(palm3)
         fingers_dict["parents"].append(-1)
-        palm3_trans = (fingers_dict["global_t_arr"][9]+fingers_dict["global_t_arr"][13])/2
-        palm3_quat = fingers_dict["global_quat_arr"][9]
+        palm3_trans = (fingers_dict["global_t_vecs"][9]+fingers_dict["global_t_vecs"][13])/2
+        palm3_quat = fingers_dict["global_quat_vecs"][9]
 
-        fingers_dict["global_t_arr"] = np.vstack((fingers_dict["global_t_arr"],palm3_trans))
-        fingers_dict["global_quat_arr"] = np.vstack((fingers_dict["global_quat_arr"],palm3_quat))
+        fingers_dict["global_t_vecs"] = np.vstack((fingers_dict["global_t_vecs"],palm3_trans))
+        fingers_dict["global_quat_vecs"] = np.vstack((fingers_dict["global_quat_vecs"],palm3_quat))
 
     def get_global_transform_arr(self,fingers_dict):
         quats = fingers_dict["quat_arr"]# shape (N,4)
@@ -177,8 +177,8 @@ class SSHandClient(QObject):
             global_t_list.append(global_T_list[i].t)
             global_R_list.append(global_T_list[i].R)
         fingers_dict["global_T_list"] = global_T_list
-        fingers_dict["global_t_arr"] = np.array(global_t_list)
-        fingers_dict["global_quat_arr"] =  R.from_matrix(np.array(global_R_list)).as_quat()  # order (x, y, z, w)
+        fingers_dict["global_t_vecs"] = np.array(global_t_list)
+        fingers_dict["global_quat_vecs"] =  R.from_matrix(np.array(global_R_list)).as_quat()  # order (x, y, z, w)
     def circular_TCP(self):
         # extract packet with a circular buffer
         MARKER = b'\x00\x00\x11'
@@ -254,8 +254,8 @@ class SSHandClient(QObject):
             # process print text and force vectors
             force_vecs = np.zeros((9,3))
             for i,distal in enumerate([20,21,22,23,24,25,26,27,28]):
-                pos = self.fingers_dict["global_t_arr"][distal]
-                rot = R.from_quat(self.fingers_dict["global_quat_arr"][distal]).as_matrix()
+                pos = self.fingers_dict["global_t_vecs"][distal]
+                rot = R.from_quat(self.fingers_dict["global_quat_vecs"][distal]).as_matrix()
 
                 name = self.fingers_dict["names"][distal]
                 force_pos_vector = rot[:,1]*self.multiplier*self.force_response[i] # multiply the normal vector with the force magnitude

@@ -8,16 +8,8 @@ np.set_printoptions(
 import pandas as pd
 from spatialmath import SE3
 from PySide6.QtCore import QObject, Signal,QTimer,Slot,QElapsedTimer,Qt
-import debugpy
+from hand_process_helper import read_hand_csv, unzip_hand_data_sample
 
-def read_hand_csv(path,side):
-    hand = pd.read_csv(f"{path}/{side}_hand.csv").to_numpy()[:,2:]
-    hand_col_head = pd.read_csv(f"{path}/{side}_hand.csv").columns.to_numpy()[2:]
-    hand_indices = {}
-    for spots in ["thumb","index","middle","ring","pinky","palm_0","palm_1","palm_2","palm_3"]:
-        finger_indices = [i for i, s in enumerate(hand_col_head) if spots.lower() in s.lower()]
-        hand_indices[spots] = finger_indices
-    return hand, hand_col_head, hand_indices
 class FMCVisualChecker(QObject):
     time_ready = Signal(dict)
     finish_save = Signal()
@@ -64,24 +56,6 @@ class FMCVisualChecker(QObject):
     """
     Logging Callback
     """
-    def reprocess_hand_data(self,hand_data,hand_indices):
-        # process hand data
-        global_t_arr = []
-        global_quat_arr = []
-        force_vecs = []
-        for spots in ["thumb","index","middle","ring","pinky","palm_0","palm_1","palm_2","palm_3"]:
-            # print(f"{spots}: {self.left_hand_col[self.left_hand_indices[spots]]}")
-            data = hand_data[hand_indices[spots]]
-            global_t_arr.append(data[:3])
-            global_quat_arr.append(data[3:7])
-            force_vecs.append(data[7:])
-        hand_data_processed = {
-            "global_t_arr": global_t_arr,
-            "global_quat_arr": global_quat_arr,
-            "force_vecs": force_vecs
-        }
-        return hand_data_processed
-        
     def display_current_data(self):
         self.frame_id += 1
         if self.frame_id >= self.total_frames:
@@ -102,14 +76,14 @@ class FMCVisualChecker(QObject):
         # process hands
         if self.sensor_flags["ss"] == 1:
             if "left" in self.sides:
-                self.left_hand_processed = self.reprocess_hand_data(self.left_hand_data[self.frame_id],self.left_hand_indices)
+                self.unzipped_left_hand = unzip_hand_data_sample(self.left_hand_data[self.frame_id],self.left_hand_indices)
             else:
-                self.left_hand_processed = 0
+                self.unzipped_left_hand = 0
 
             if "right" in self.sides:
-                self.right_hand_processed = self.reprocess_hand_data(self.right_hand_data[self.frame_id],self.right_hand_indices)
+                self.unzipped_right_hand = unzip_hand_data_sample(self.right_hand_data[self.frame_id],self.right_hand_indices)
             else:
-                self.right_hand_processed = 0
+                self.unzipped_right_hand = 0
 
         # process rft
         if self.sensor_flags["rft"] == 1:
@@ -126,8 +100,8 @@ class FMCVisualChecker(QObject):
             "print_text":print_text,
             "logger_fps":self.logger_fps,
             "frame_id": self.frame_id,
-            "left_hand_response": self.left_hand_processed,
-            "right_hand_response": self.right_hand_processed,
+            "left_hand_response": self.unzipped_left_hand,
+            "right_hand_response": self.unzipped_right_hand,
             "rft_response": rft_data,
             "measured_wrench": measured_wrench,
         }

@@ -36,7 +36,7 @@ class FMCBase(QtWidgets.QMainWindow):
     def __init__(self,freq=100,gui_3d_on=False):
         super().__init__()
         self.setWindowTitle("Live Sensor Plot")
-        # self.setWindowState(Qt.WindowMaximized)
+        self.setWindowState(Qt.WindowMaximized)
 
         # self.container and main layout boxes, this is the main box: DONT TOUCH
         self.container = QtWidgets.QWidget()
@@ -132,7 +132,7 @@ class FMCBase(QtWidgets.QMainWindow):
         }
         return live_stream_plot
     def init_gui_3d(self):
-        self.canvas_gui_3d = scene.SceneCanvas(keys='interactive', show=True,size=(800, 300))
+        self.canvas_gui_3d = scene.SceneCanvas(keys='interactive', show=True,size=(800, 400))
         self.canvas_gui_3d
         self.canvas_gui_3d.create_native()
         self.main_layout.addWidget(self.canvas_gui_3d.native)

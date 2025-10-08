@@ -356,8 +356,8 @@ class FMCGloveEval(FMCBase):
         hand = self.hands[side]
         fingers_data = hand_response["fingers_dict"]
         fingers_names = fingers_data["names"]
-        fingers_pos = fingers_data["global_t_arr"]
-        fingers_quat = fingers_data["global_quat_arr"]
+        fingers_pos = fingers_data["global_t_vecs"]
+        fingers_quat = fingers_data["global_quat_vecs"]
         fingers_force_vecs = fingers_data["force_vecs"]
 
         for distal_name,distal_id,force_vec in zip(["thumb","index","middle","ring","pinky","palm1","palm2","palm3","palm4"],[20,21,22,23,24,25,26,27,28],fingers_force_vecs): 
@@ -510,7 +510,7 @@ class FMCGloveEval(FMCBase):
                 plt.deleteLater()
             self.close()
             self.deleteLater()
-
+4
 if __name__ == "__main__":
     try:
         argv = sys.argv[1]
@@ -526,9 +526,9 @@ if __name__ == "__main__":
                                 "rft":1,
                                 "log":1,
                                 "gui_3d_on":True,
-                                "wrench_gui":{"on?":True,"RFT":True,"ESP":False,"SS":False,"feedback":False}},
-                "wrench_type":["force","N",10,20],
-                "VIVE":3,
+                                "wrench_gui":{"on?":True,"RFT":False,"ESP":False,"SS":False,"feedback":True}},
+                "wrench_type":["force","N",15,20],
+                "VIVE":2,
                 "RFT":"COM4",
                 # "ESP":{"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.240.121","192.168.240.27"],"server_ports":[4213,4214]},
                 # "SS":{"sides":["left","right"],"ports": [9004,9003]}}
