@@ -70,11 +70,12 @@ class OpenVRServer(QObject):
                 else:
                     inert_T = SE3.Rt(R_inert.as_matrix(),pos_inert)
                     cur_point = ground_T.inv()@inert_T
-                    pos_inert = cur_point.t+np.array([0,0,0.267-0.048]) # 0.267 - mdf to top, 0.048 mdf to rft
+                    pos_inert = cur_point.t+np.array([0,0,(26-3.3)/100]) # 0.267 - mdf to top, 0.048 mdf to rft
+                    # 26/100 , 3.3/100
                     R_inert = R.from_matrix(cur_point.R) # correct the orientation to inertial frame
                     quat_inert = R_inert.as_quat()
 
-                print_text += f"Marker {name}: {pos_inert}\n"
+                print_text += f"Marker {name}: {pos_inert*100}\n"
 
                 if name == "LHR-C700522C" or name == "LHR-26922E89":
                     if name == "LHR-C700522C":

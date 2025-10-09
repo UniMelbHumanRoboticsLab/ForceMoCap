@@ -19,7 +19,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QV
 class SSHandClient(QObject):
     hand_ready = Signal(dict)
     stopped = Signal()
-    def __init__(self, ip="127.0.0.1", port=9004,performer_Id="JQ",side="left",finger_len=1):
+    def __init__(self, ip="127.0.0.1", port=9003,performer_Id="JQ",side="right",finger_len=1):
         super().__init__()
         self.side=side
         self.ip = ip
@@ -260,7 +260,7 @@ class SSHandClient(QObject):
                 name = self.fingers_dict["names"][distal]
                 force_pos_vector = rot[:,1]*self.multiplier*self.force_response[i] # multiply the normal vector with the force magnitude
                 force_vecs[i,:] = force_pos_vector
-                self.print_text += f"{name:<12}: {pos}\tforce vector: {force_pos_vector}\n"
+                self.print_text += f"{name:<12}: {pos*100}\tforce vector: {force_pos_vector}\n"
                 # print(f"{name:<20}:")
             self.print_text += f"Net Force: \t\t\t\tforce vector: {np.sum(force_vecs,axis=0)}"
 
@@ -344,7 +344,7 @@ class MainWindow(QMainWindow):
 
         # Setup thread and worker
         self.thread = QThread()
-        self.worker = SSHandClient(port=9004,performer_Id="JQ",side="left")
+        self.worker = SSHandClient(port=9003,performer_Id="JQ",side="right")
         self.worker.moveToThread(self.thread)
 
         # Connect signals

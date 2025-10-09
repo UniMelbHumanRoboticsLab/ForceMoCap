@@ -74,22 +74,21 @@ exe_b_list = [
     },
 ]
 
-exercises_list = [exe_a_list, exe_b_list]
+exercises_list = [exe_b_list,exe_a_list]
 SCRIPT = os.path.join(os.path.dirname(__file__), "fmc_glove_eval.py")
 
-subject_name = "sub1"
+subject_name = "sub2"
 exp_id = "exp1"
 # esp_info = {"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.153.121","192.168.153.28"],"server_ports":[4213,4214]},
-esp_info = {"sides":["right"],"ports":[4212],"ips":["192.168.153.28"],"server_ports":[4214]}
-# esp_info:{"sides":["left"],"ports":[4211],"ip":["192.168.153.121"],"server_ports":[4213]},
+# esp_info = {"sides":["right"],"ports":[4212],"ips":["192.168.240.27"],"server_ports":[4214]}
+esp_info = {"sides":["left"],"ports":[4211],"ips":["192.168.240.121"],"server_ports":[4213]}
 # ss_info = {"sides":["left","right"],"ports": [9004,9003]}
-ss_info = {"sides":["right"],"ports": [9003]}
-# ss_info:{"sides":["left"],"ports": [9004]}}
+# ss_info = {"sides":["right"],"ports": [9003]}
+ss_info={"sides":["left"],"ports": [9004]}
 
 for exe_cat in exercises_list:
-    random.shuffle(exe_cat)
+    # random.shuffle(exe_cat)
     for exercise in exe_cat:
-        exercise["exe_id"] = "exe1b1.1"
         # show exercise to participant
         images_path = os.path.join(f"./experiments/{exp_id}/protocol/exercise_images", f"{exercise['exe_id']}.png")
         print("\n========================================================")
@@ -123,9 +122,9 @@ for exe_cat in exercises_list:
                     "subject_name":subject_name,
                     "glove_performer":subject_name,
                     "exe_id":exercise["exe_id"],
-                    "init_flags":{"vive":0,
-                                    "esp":0,
-                                    "ss":0,
+                    "init_flags":{"vive":1,
+                                    "esp":1,
+                                    "ss":1,
                                     "rft":1,
                                     "log":1,
                                     "gui_3d_on":True,
@@ -149,6 +148,8 @@ for exe_cat in exercises_list:
             if rc != 0:
                 print(f"Session {exercise}_{wrench_level} exited with {rc}, stopping.")
                 break
+            import time
+            time.sleep(1)
 
         print(f"\n=== Session {exercise['exe_id']} ended ===\n")
         print("========================================================\n")

@@ -116,6 +116,7 @@ class FMCEvalLogger(QObject):
                 else:  # rest
                     instruction = "Rest"
                 wrench_instructed = wrench_level
+
             else:
                 phase = 3
                 instruction = f"Rep {self.dyad_path} Finished"
@@ -144,7 +145,7 @@ class FMCEvalLogger(QObject):
 
                 if self.wrench_type == "force":
                     wrench_feedback = np.array([wrench_instructed,np.linalg.norm(self.rft_response["rft_data_arr"][:3])])
-                elif self.wrench_type == "torque":
+                elif self.wrench_type == "moment":
                     wrench_feedback = np.array([wrench_instructed,np.linalg.norm(self.rft_response["rft_data_arr"][3:])])
             else:
                 wrench_feedback = np.array([wrench_instructed,0])
