@@ -10,7 +10,10 @@ from sklearn.metrics import r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler,PolynomialFeatures
-from force_analyze_helper import *
+
+import os, sys,json
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from analysis.analysis_helper import *
 
 # 1-1 linear regression with SGD optimization 
 def fit_model(force_df:pd.DataFrame):
@@ -49,16 +52,16 @@ if __name__ == "__main__":
                     calib_df.append(cur_force_df)
                 calib_df = pd.concat(calib_df)
                 calib_df = calib_df.reset_index()
-                # analyze_quant(calib_df,"F","Train",mag=True)                
-                # scatter_quant_mag(calib_df,["F","1/R"],case=f"Train")
+                # analyze_quantity(calib_df,"F","Train",mag=True)                
+                # scatter_quantities(calib_df,["F","1/R"],case=f"Train",corr=False)
                 
                 # calibration matrix
                 calib_matrix = fit_model(calib_df)
 
                 # print("Training Eval")
                 pred_df = pred_model(force_df=calib_df,calib_matrix=calib_matrix)
-                # analyze_quant(pred_df,quantity="dF",case="Train Eval",mag=True)
-                # scatter_quant_mag(pred_df,["F","F_pred"],case="Train Eval")
+                # analyze_quantity(pred_df,quantity="dF",case="Train Eval",mag=True)
+                # scatter_quantities(pred_df,["F","F_pred"],case="Train Eval",corr=False)
                 
                 # test samples
                 
@@ -71,9 +74,9 @@ if __name__ == "__main__":
 
                     # print(f"Test {iter} Eval")
                     pred_df = pred_model(force_df=test_df,calib_matrix=calib_matrix)
-                    # analyze_quant(pred_df,quantity="dF",case=f"Test Eval",mag=True)
-                    # scatter_quant_mag(test_df,["F","1/R"],case=f"Test Eval")
-                    scatter_quant_mag(pred_df,["F","F_pred"],case=f"Test Eval")
+                    # analyze_quantity(pred_df,quantity="dF",case=f"Test Eval",mag=True)
+                    # scatter_quantities(test_df,["F","1/R"],case=f"Test Eval",corr=False)
+                    scatter_quantities(pred_df,["F","F_pred"],case=f"Test Eval",corr=True)
                 
                 # save model and figures
                 calib_path = os.path.join(f"./sensor_calib_fsr/data/{hand}/{sensor}", f"model_{hand}_{sensor}.pkl")
@@ -99,5 +102,5 @@ if __name__ == "__main__":
                     fig_path = os.path.join(f"./sensor_calib_fsr/data/{hand}/{sensor}/analysis", f"{i}.png")
                     fig.savefig(fig_path)
                 # plt.tight_layout()
-                plt.show()
+                # plt.show()
                 plt.close('all')

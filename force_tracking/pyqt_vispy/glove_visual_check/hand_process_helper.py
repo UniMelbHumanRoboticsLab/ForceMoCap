@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 def read_hand_csv(path,side):
     hand = pd.read_csv(f"{path}/{side}_hand.csv").to_numpy()[:,2:]
@@ -39,7 +40,7 @@ def unzip_hand_data_arr(hand_data_arr,hand_indices):
     fingers_moment_arr = []
     total_force_arr = []
     total_moment_arr = []
-    for raw_hand in hand_data_arr:
+    for raw_hand in tqdm(hand_data_arr):
         hand_data = unzip_hand_data_sample(raw_hand,hand_indices) 
         unzipped_hand_arr.append(hand_data)
         fingers_force_arr.append(hand_data["force_vecs"])
