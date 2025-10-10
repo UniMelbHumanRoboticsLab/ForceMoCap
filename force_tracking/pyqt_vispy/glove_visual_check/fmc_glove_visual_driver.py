@@ -75,17 +75,11 @@ exe_b_list = [
 ]
 
 exercises_list = [exe_b_list]
-SCRIPT = os.path.join(os.path.dirname(__file__), "fmc_glove_eval.py")
+SCRIPT = os.path.join(os.path.dirname(__file__), "fmc_glove_visual_check.py")
 
-subject_name = "sub1"
+subject_name = "sub2"
 exp_id = "exp1"
-# esp_info = {"sides":["left","right"],"ports":[4211,4212],"ips":["192.168.153.121","192.168.153.28"],"server_ports":[4213,4214]},
-esp_info = {"sides":["right"],"ports":[4212],"ips":["192.168.240.27"],"server_ports":[4214]}
-# esp_info = {"sides":["left"],"ports":[4211],"ips":["192.168.240.121"],"server_ports":[4213]}
-# ss_info = {"sides":["left","right"],"ports": [9004,9003]}
-ss_info = {"sides":["right"],"ports": [9003]}
-# ss_info={"sides":["left"],"ports": [9004]}
-
+side = "left"
 for exe_cat in exercises_list:
     # random.shuffle(exe_cat)
     for exercise in exe_cat:
@@ -113,30 +107,21 @@ for exe_cat in exercises_list:
             wrench_levels = [0.25,0.5,0.75,1]
 
         max_range = wrench_levels[-1]
-        random.shuffle(wrench_levels)
         
         for wrench_level in wrench_levels:
             # print(wrench_level)
             argv ={"gui_freq":60,
-                    "exp_id":exp_id,
-                    "subject_name":subject_name,
-                    "glove_performer":subject_name,
-                    "exe_id":exercise["exe_id"],
-                    "init_flags":{"vive":1,
-                                    "esp":1,
-                                    "ss":1,
-                                    "rft":1,
-                                    "log":1,
-                                    "gui_3d_on":True,
-                                    "wrench_gui":{"on?":True,"RFT":False,"ESP":False,"SS":False,"feedback":True}},
-                    "wrench_type":exercise["wrench_type"]+[wrench_level,max_range],
-                    "VIVE":2,
-                    "RFT":"COM4",
-                    "ESP":esp_info,
-                    # "ESP":{"sides":["right"],"ports":[4212],"ips":["192.168.153.28"],"server_ports":[4214]},
-                    # "ESP":{"sides":["left"],"ports":[4211],"ip":["192.168.153.121"]},
-                    "SS":ss_info}
-                    # "SS":{"sides":["right"],"ports": [9003]}}
+                "exp_id":"exp1",
+                "subject_name":subject_name,
+                "glove_performer":subject_name,
+                "exe_id":exercise['exe_id'],
+                "init_flags":{"ss":1,
+                            "rft":1,
+                            "visual_check":1,
+                            "gui_3d_on":True,
+                            "wrench_gui":{"on?":True,"RFT":True,"SS":False,"feedback":True}},
+                "wrench_type":[exercise["wrench_type"][0],exercise["wrench_type"][1],wrench_level],
+                "SS":{"sides":[side]}}
 
             argv = json.dumps(argv)
 

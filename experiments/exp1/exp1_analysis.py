@@ -106,14 +106,27 @@ exe_cat_b = {
     ]
 }
 
-exe_categories = [exe_cat_a]
 
+
+# subject_list = [
+#     {
+#         "subject_id": "sub1",
+#         "side": "right",
+#     },
+#     {
+#         "subject_id": "sub2",
+#         "side": "left",
+#     }
+# ]
+
+exe_categories = [exe_cat_a]
 subject_list = [
     {
-        "subject_id": "sub1",
-        "side": "right",
+        "subject_id": "sub2",
+        "side": "left",
     }
 ]
+
 
 for exe_category in exe_categories:
     for zone in exe_category["exe_zones"]:
@@ -126,9 +139,22 @@ for exe_category in exe_categories:
             side = subject["side"]       
             for exe in zone["exercises"]:
                 exe_id = exe["exe_id"]
+                wrench_type = exe["wrench_type"][0]
+
+                if wrench_type == "force":
+                    wrench_levels = [5, 10, 15, 20]
+                elif wrench_type == "moment":
+                    wrench_levels = [0.5,1,1.5,2]
+                if exe_id == "exe1b1.1" or exe_id == "exe1b2.1":
+                    wrench_levels = [5]
+                if exe_id == "exe1b1.5":
+                    wrench_levels = [0.25,0.5]
+                if exe_id == "exe1b2.5":
+                    wrench_levels = [0.25,0.5,0.75,1]
+
                 print(f"Processing {subject_id} {exe_id}")
-                for force_level in [5,10,15,20]:
-                    cur_sub_exe_level_path = os.path.join(os.path.dirname(__file__),"data",subject_id,exe_id,f"force_{force_level}")
+                for force_level in wrench_levels:
+                    cur_sub_exe_level_path = os.path.join(os.path.dirname(__file__),"data",subject_id,exe_id,f"{wrench_type}_{force_level}")
                     cur_rft_wrenches_df = pd.read_csv(os.path.join(cur_sub_exe_level_path, "rft_wrenches.csv"))
                     cur_raw_hand_arr, hand_col, hand_indices = read_hand_csv(cur_sub_exe_level_path,side)
 
@@ -151,10 +177,10 @@ for exe_category in exe_categories:
         print(f"\nStart Analysis")
         case = f"Exercise: {exe_category['cat_name']}, Zone: {zone['zone_name']}"
         for wrench in ["F","T"]:
-            for dim in ["x","y","z"]:
+            for dim in ["x","y"]:
                 quantity_rft = f"{wrench}{dim}"
                 quantity_hand = f"{wrench}{dim}_hand"
-                compare_quantities(total_wrenches_df, quantities=[quantity_rft, quantity_hand], case=f"Wrench_{case}",corr=True)
+                compare_quantities(total_wrenches_df, quantities=[quantity_rft, quantity_hand], case=f"Wrench_{case}_{wrench}{dim}",corr=True)
 
 plt.show()
 plt.close('all')
